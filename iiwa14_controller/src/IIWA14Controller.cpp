@@ -8,9 +8,33 @@ namespace iiwa14 {
 
 	bool IIWA14Controller::sv_executeCartesian( iiwa14_controller::ExecuteCartesian::Request & req, iiwa14_controller::ExecuteCartesian::Response & rsp ){
 
+
 		//rsp.success = executeCartesian( req.waypoints, rsp.message );
 		return true;
 	}
+
+
+	bool IIWA14Controller::sv_executeJoints( iiwa14_controller::ExecuteJoints::Request & req, iiwa14_controller::ExecuteJoints::Response & rsp ){
+
+
+		return true;
+	}
+
+
+	bool IIWA14Controller::sv_executeMotion( iiwa14_controller::ExecuteMotion::Request & req, iiwa14_controller::ExecuteMotion::Response & rsp ){
+
+
+		return true;
+	}
+
+
+	bool IIWA14Controller::sv_executeGripper( iiwa14_controller::ExecuteGripper::Request & req, iiwa14_controller::ExecuteGripper::Response & rsp ){
+
+
+		return true;
+	}
+
+
 
 
 
@@ -52,6 +76,26 @@ namespace iiwa14 {
 			return false;
 		}
 	}
+
+
+	bool IIWA14Controller::executeJoints( std::vector<std::string> jn, std::vector<double> jv, std::string & error_message ){
+
+
+	}
+
+
+	bool IIWA14Controller::executeMotion( geometry_msgs::Pose goal, std::string & error_message ){
+
+
+	}
+
+
+	bool IIWA14Controller::executeGripper( bool enable, std::string & error_message ){
+
+
+		
+	}
+
 
 
 }

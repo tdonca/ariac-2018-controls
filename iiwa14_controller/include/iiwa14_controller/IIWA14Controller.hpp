@@ -14,6 +14,9 @@ namespace iiwa14 {
 			ros::AsyncSpinner spinner_;
 			moveit::planning_interface::MoveGroupInterface move_group_;
 			ros::ServiceServer cartesian_srv_;
+			ros::ServiceServer joints_srv_;
+			ros::ServiceServer motion_srv_;
+			ros::ServiceServer gripper_srv_;
 
 
 		public:
@@ -22,10 +25,16 @@ namespace iiwa14 {
 			:	node_(),
 				spinner_(2),
 				move_group_("manipulator"),
-				cartesian_srv_()
+				cartesian_srv_(),
+				joints_srv_(),
+				motion_srv_(),
+				gripper_srv_()
 
 			{	
 				cartesian_srv_ = node_.advertiseService( "iiwa14_controller/execute_cartesian", &IIWA14Controller::sv_executeCartesian, this );
+				joints_srv_ = node_.advertiseService( "iiwa14_controller/execute_joints", &IIWA14Controller::sv_executeJoints, this );
+				motion_srv_ = node_.advertiseService( "iiwa14_controller/execute_motion", &IIWA14Controller::sv_executeMotion, this );
+				gripper_srv_ = node_.advertiseService( "iiwa14_controller/execute_gripper", &IIWA14Controller::sv_executeGripper, this );
 
 				spinner_.start();
 

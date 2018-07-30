@@ -1,0 +1,9 @@
+# Goal Pose for Motion Planning
+
+
+geometry_msgs/Pose goal_pose
+
+---
+
+bool success
+string message

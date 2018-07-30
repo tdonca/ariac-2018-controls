@@ -1,0 +1,10 @@
+# New Joint Positions for JointValueGoal
+
+
+string[] joint_names
+string[] joint_values
+
+---
+
+bool success
+string message
