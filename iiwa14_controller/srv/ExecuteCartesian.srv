@@ -1,0 +1,9 @@
+# Waypoints for a Cartesian Path Excution
+
+
+geometry_msgs/Pose[] waypoints
+
+---
+
+bool success
+string message
