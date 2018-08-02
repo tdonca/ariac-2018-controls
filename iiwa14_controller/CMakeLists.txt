@@ -60,7 +60,7 @@ add_service_files(
    FILES
    ExecuteCartesian.srv
    ExecuteJoints.srv
-   ExecuteMotion.srv
+   ExecutePose.srv
    ExecuteGripper.srv
 
 )

@@ -1,0 +1,9 @@
+# Toggle gripper on/off
+
+
+bool enable
+
+---
+
+bool success
+string message

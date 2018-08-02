@@ -31,9 +31,9 @@ namespace iiwa14 {
 	}
 
 
-	bool IIWA14Controller::sv_executeMotion( iiwa14_controller::ExecuteMotion::Request & req, iiwa14_controller::ExecuteMotion::Response & rsp ){
+	bool IIWA14Controller::sv_executePose( iiwa14_controller::ExecutePose::Request & req, iiwa14_controller::ExecutePose::Response & rsp ){
 
-		rsp.success = executeMotion( req.goal_pose, rsp.message );
+		rsp.success = executePose( req.goal_pose, rsp.message );
 		return true;
 	}
 
@@ -134,7 +134,7 @@ namespace iiwa14 {
 	}
 
 
-	bool IIWA14Controller::executeMotion( geometry_msgs::Pose goal, std::string & error_message ){
+	bool IIWA14Controller::executePose( geometry_msgs::Pose goal, std::string & error_message ){
 
 		// Define the pose goal
 		move_group_.setPoseTarget(goal);

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(test)
+project(controller_server)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -7,13 +7,13 @@ add_compile_options(-std=c++11)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS 
-	roscpp 
-	rospy 
-	iiwa14_controller 
+find_package(catkin REQUIRED COMPONENTS
+	roscpp
+	rospy
 	roslaunch
-	controller_server
-	
+	message_generation
+	geometry_msgs
+	iiwa14_controller
 )
 
 roslaunch_add_file_check(launch)
@@ -59,11 +59,13 @@ roslaunch_add_file_check(launch)
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  MoveJoints.srv
+  MovePose.srv
+  MoveCartesian.srv
+  ActivateGripper.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -73,10 +75,11 @@ roslaunch_add_file_check(launch)
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs  # Or other packages containing msgs
+  geometry_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -110,7 +113,7 @@ roslaunch_add_file_check(launch)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES test
-  CATKIN_DEPENDS iiwa14_controller controller_server
+  CATKIN_DEPENDS iiwa14_controller message_runtime
 #  DEPENDS system_lib
 )
 
@@ -121,13 +124,13 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+ include
  ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/test.cpp
+#   src/${PROJECT_NAME}/controller_server.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -138,7 +141,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/test_node.cpp)
+add_executable(${PROJECT_NAME}_node src/controller_server_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -154,6 +157,15 @@ add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catk
 target_link_libraries(${PROJECT_NAME}_node
    ${catkin_LIBRARIES}
 )
+
+
+## Add extra sources
+target_sources( ${PROJECT_NAME}_node
+	PUBLIC
+		src/ControllerServer.cpp
+)
+
+
 
 #############
 ## Install ##
@@ -195,7 +207,7 @@ target_link_libraries(${PROJECT_NAME}_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_test.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_controller_server.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
