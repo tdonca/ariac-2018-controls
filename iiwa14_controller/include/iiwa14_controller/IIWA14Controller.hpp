@@ -1,7 +1,10 @@
 #include <ros/ros.h>
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <iiwa14_controller/ExecuteCartesian.h>
-
+#include <iiwa14_controller/ExecuteJoints.h>
+#include <iiwa14_controller/ExecuteMotion.h>
+#include <iiwa14_controller/ExecuteGripper.h>
+#include <osrf_gear/VacuumGripperControl.h>
 
 
 namespace control{
@@ -17,6 +20,7 @@ namespace iiwa14 {
 			ros::ServiceServer joints_srv_;
 			ros::ServiceServer motion_srv_;
 			ros::ServiceServer gripper_srv_;
+			ros::ServiceClient vacuum_srv_;
 
 
 		public:
@@ -28,9 +32,12 @@ namespace iiwa14 {
 				cartesian_srv_(),
 				joints_srv_(),
 				motion_srv_(),
-				gripper_srv_()
+				gripper_srv_(),
+				vacuum_srv_()
 
 			{	
+				vacuum_srv_ = node_.serviceClient<osrf_gear::VacuumGripperControl>("ariac/gripper/control");
+
 				cartesian_srv_ = node_.advertiseService( "iiwa14_controller/execute_cartesian", &IIWA14Controller::sv_executeCartesian, this );
 				joints_srv_ = node_.advertiseService( "iiwa14_controller/execute_joints", &IIWA14Controller::sv_executeJoints, this );
 				motion_srv_ = node_.advertiseService( "iiwa14_controller/execute_motion", &IIWA14Controller::sv_executeMotion, this );

@@ -2,7 +2,7 @@
 
 
 string[] joint_names
-string[] joint_values
+float64[] joint_values
 
 ---
 

@@ -59,6 +59,10 @@ find_package(catkin REQUIRED COMPONENTS
 add_service_files(
    FILES
    ExecuteCartesian.srv
+   ExecuteJoints.srv
+   ExecuteMotion.srv
+   ExecuteGripper.srv
+
 )
 
 ## Generate actions in the 'action' folder
