@@ -11,8 +11,11 @@ find_package(catkin REQUIRED COMPONENTS
 	roscpp 
 	rospy 
 	iiwa14_controller 
+	roslaunch
 	
 )
+
+roslaunch_add_file_check(launch)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
