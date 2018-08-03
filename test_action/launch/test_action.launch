@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<launch>
+
+	<arg name="debug" default="false" />
+	  <arg unless="$(arg debug)" name="launch_prefix" value="" />
+	  <arg     if="$(arg debug)" name="launch_prefix" value="gdb --ex run --args" />
+	  
+	  <remap from="joint_states" to="ariac/joint_states" />
+	  
+	  
+	  
+	<node name="scene_collisions_node" pkg="load_scene" type="load_scene_node" />
+	<node name="iiwa14_controller_node"   pkg="iiwa14_controller"   type="iiwa14_controller_node"   output="screen"   launch-prefix="$(arg launch_prefix)" />
+	<node name="controller_server_node"   pkg="controller_server"   type="controller_server_node"   output="screen"   launch-prefix="$(arg launch_prefix)" />
+	<node name="action_manager_node"   pkg="action_manager"   type="action_manager_node"   output="screen"   launch-prefix="$(arg launch_prefix)" />
+	<node name="test_action_node"   pkg="test_action"   type="test_action_node"   output="screen"   launch-prefix="$(arg launch_prefix)" />
+
+</launch>

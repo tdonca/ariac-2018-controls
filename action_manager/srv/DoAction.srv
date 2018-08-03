@@ -1,0 +1,13 @@
+# Request an action by specifying the action name, and filling in any relevant fields
+
+string action
+
+string part_name
+string bin_name
+string box_name
+geometry_msgs/Pose goal_pose
+
+---
+
+bool success
+string message

@@ -43,7 +43,7 @@ namespace iiwa14 {
 				ROS_INFO("IIWA14Controller is waiting for services to appear...");
 				vacuum_srv_ = node_.serviceClient<osrf_gear::VacuumGripperControl>("ariac/gripper/control");
 				vacuum_srv_.waitForExistence();
-				ROS_INFO("IIWA14Controller is ready. ");
+				ROS_INFO("IIWA14Controller services have appeared. ");
 
 				cartesian_srv_ = node_.advertiseService( "iiwa14_controller/execute_cartesian", &IIWA14Controller::sv_executeCartesian, this );
 				joints_srv_ = node_.advertiseService( "iiwa14_controller/execute_joints", &IIWA14Controller::sv_executeJoints, this );
@@ -51,7 +51,7 @@ namespace iiwa14 {
 				gripper_srv_ = node_.advertiseService( "iiwa14_controller/execute_gripper", &IIWA14Controller::sv_executeGripper, this );
 
 				spinner_.start();
-
+				ROS_INFO("IIWA14Controller is ready. ");
 			}
 
 

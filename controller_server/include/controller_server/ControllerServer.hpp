@@ -43,7 +43,7 @@ namespace control {
 
 			{	
 				// DEBUG: Wait for startup prints to finish
-				ros::Duration(1.5).sleep();
+				ros::Duration(1.1).sleep();
 
 				ROS_INFO("ControllerServer is waiting for services to appear...");
 				cartesian_srv_ = node_.serviceClient<iiwa14_controller::ExecuteCartesian>( "iiwa14_controller/execute_cartesian" );
@@ -54,7 +54,7 @@ namespace control {
 				joints_srv_.waitForExistence();
 				pose_srv_.waitForExistence();
 				gripper_srv_.waitForExistence();
-				ROS_INFO("ControllerServer is ready.");
+				ROS_INFO("ControllerServer services have appeared.");
 
 				joints_srvs_ = node_.advertiseService( "controller_server/move_joints", &ControllerServer::sv_moveJoints, this );
 				pose_srvs_ = node_.advertiseService( "controller_server/move_pose", &ControllerServer::sv_movePose, this );
@@ -63,6 +63,7 @@ namespace control {
 
 
 				spinner_.start();
+				ROS_INFO("ControllerServer is ready.");
 			}
 
 
