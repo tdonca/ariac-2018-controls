@@ -13,7 +13,6 @@ int main( int argc, char* argv[] ){
 
 	
 	spinner.start();
-	ROS_INFO("IIWA14 Controller is ready.");
 	ros::waitForShutdown();
 	return 0;
 }

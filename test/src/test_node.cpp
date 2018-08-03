@@ -1,9 +1,9 @@
 #include <ros/ros.h>
-#include <iiwa14_controller/ExecuteCartesian.h>
-#include <iiwa14_controller/ExecuteJoints.h>
-#include <iiwa14_controller/ExecuteMotion.h>
-#include <iiwa14_controller/ExecuteGripper.h>
 
+#include <controller_server/MoveJoints.h>
+#include <controller_server/MovePose.h>
+#include <controller_server/MoveCartesian.h>
+#include <controller_server/ActivateGripper.h>
 
 int main( int argc, char* argv[] ){
 
@@ -17,14 +17,14 @@ int main( int argc, char* argv[] ){
 
 
 	//Test
-	ros::ServiceClient cartesian_srv = node.serviceClient<iiwa14_controller::ExecuteCartesian>( "iiwa14_controller/execute_cartesian" );
-	ros::ServiceClient joints_srv = node.serviceClient<iiwa14_controller::ExecuteJoints>( "iiwa14_controller/execute_joints" );
-	ros::ServiceClient motion_srv = node.serviceClient<iiwa14_controller::ExecuteMotion>( "iiwa14_controller/execute_motion" );
-	ros::ServiceClient gripper_srv = node.serviceClient<iiwa14_controller::ExecuteGripper>( "iiwa14_controller/execute_gripper" );
-	iiwa14_controller::ExecuteCartesian c_srv;
-	iiwa14_controller::ExecuteJoints j_srv;
-	iiwa14_controller::ExecuteMotion m_srv;
-	iiwa14_controller::ExecuteGripper g_srv;
+	ros::ServiceClient cartesian_srv = node.serviceClient<controller_server::MoveCartesian>( "controller_server/move_cartesian" );
+	ros::ServiceClient joints_srv = node.serviceClient<controller_server::MoveJoints>( "controller_server/move_joints" );
+	ros::ServiceClient pose_srv = node.serviceClient<controller_server::MovePose>( "controller_server/move_pose" );
+	ros::ServiceClient gripper_srv = node.serviceClient<controller_server::ActivateGripper>( "controller_server/activate_gripper" );
+	controller_server::MoveCartesian c_srv;
+	controller_server::MoveJoints j_srv;
+	controller_server::MovePose p_srv;
+	controller_server::ActivateGripper g_srv;
 	std::vector<std::string> jn = { "linear_arm_actuator_joint", "iiwa_joint_1", "iiwa_joint_2", "iiwa_joint_3", "iiwa_joint_4", "iiwa_joint_5", "iiwa_joint_6", "iiwa_joint_7"};
 	std::vector<double> box = {-0.07,           0.00,            0.91,            0.00,         -1.81,           0.00,           0.21,             0.00};
 	std::vector<double> facebin4 = {0.60, -2.11, -1.40, -1.52, -2.06, -1.58, 1.44, 0.06};
@@ -59,24 +59,24 @@ int main( int argc, char* argv[] ){
 				}
 			}
 			else{
-				ROS_ERROR("Could not call ExecuteJoints.");
+				ROS_ERROR("Could not call MoveJoints.");
 			}
 		}
 
 
 
 		else if( i == 2){
-			m_srv.request.goal_pose = box_p;
-			if( motion_srv.call(m_srv) ){
-				if( m_srv.response.success ){
+			p_srv.request.goal_pose = box_p;
+			if( pose_srv.call(p_srv) ){
+				if( p_srv.response.success ){
 					ROS_INFO("Motion path executed successfully.");
 				}
 				else{
-					ROS_ERROR("Fail: %s", m_srv.response.message.c_str());
+					ROS_ERROR("Fail: %s", p_srv.response.message.c_str());
 				}
 			}
 			else{
-				ROS_ERROR("Could not call ExecuteMotion.");
+				ROS_ERROR("Could not call MovePose.");
 			}
 
 		}
@@ -97,7 +97,7 @@ int main( int argc, char* argv[] ){
 				}
 			}
 			else{
-				ROS_ERROR("Could not call ExecuteCartesian.");
+				ROS_ERROR("Could not call MoveCartesian.");
 			}
 		}
 
@@ -114,7 +114,7 @@ int main( int argc, char* argv[] ){
 				}
 			}
 			else{
-				ROS_ERROR("Could not call ExecuteGripper.");
+				ROS_ERROR("Could not call ActivateGripper.");
 			}
 		}
 

@@ -13,7 +13,6 @@ int main( int argc, char* argv[] ){
 
 	
 	spinner.start();
-	ROS_INFO("Controller Server is ready.");
 	ros::waitForShutdown();
 	return 0;
 }
