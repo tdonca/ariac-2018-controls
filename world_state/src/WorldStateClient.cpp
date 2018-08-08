@@ -6,7 +6,24 @@
 
 namespace client {
 	
+
+	void getRPY( const geometry_msgs::Pose  pose, double & r, double & p, double & y ){
 	
+	tf2::Quaternion arm_q;
+	tf2::fromMsg( pose.orientation, arm_q );
+	tf2::Matrix3x3(arm_q).getRPY( r, p, y );
+	
+
+	}
+
+	void setRPY( const double r, const double p, const double y, geometry_msgs::Pose & pose ){
+		
+		tf2::Quaternion q;
+		q.setRPY( r, p, y );
+		pose.orientation = tf2::toMsg( q );
+	}
+
+
 	void WorldStateClient::test(){
 		
 		movePartToBox("gear_part_5");
@@ -232,7 +249,36 @@ namespace client {
 		}
 	}
 			
-	
+
+			
+	bool WorldStateClient::getPartGrabPose( std::string name, geometry_msgs::Pose & part_pose ){
+
+		world_state::GetPartPose pp_srv;
+		pp_srv.request.part_name = name;
+		
+		if( m_part_pose_srv.call(pp_srv) ){
+			if( pp_srv.response.success ){
+
+				part_pose = pp_srv.response.part_pose;
+
+				// Flip Z-axis orientation to match robot EE
+				double part_r, part_p, part_y;
+				getRPY( part_pose, part_r, part_p, part_y );
+				setRPY( part_r+3.14159, part_p, part_y, part_pose );
+				// Offset to stop right above the part
+				part_pose.position.z+= 0.05;
+				return true;
+			}
+			else{
+				ROS_ERROR("Fail: %s", pp_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Error calling GetPartPose service.");
+			return false;
+		}
+	}
 
 
 	bool WorldStateClient::getBinLocation( std::string name, std::vector<std::string> & jn, std::vector<double> & jv ){
@@ -287,21 +333,4 @@ namespace client {
 
 
 
-
-
-
-
-
-
-
-
-
-	
-	void getRPY( const geometry_msgs::Pose  pose, double & r, double & p, double & y ){
-		
-		tf2::Quaternion arm_q;
-		tf2::fromMsg( pose.orientation, arm_q );
-		tf2::Matrix3x3(arm_q).getRPY( r, p, y );
-		
-	}
 }

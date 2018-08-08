@@ -20,7 +20,6 @@ namespace client {
 	struct PlannerPart;
 	void getRPY( const geometry_msgs::Pose  pose, double & r, double & p, double & y );
 	
-	
 	class WorldStateClient {
 		
 		public:
@@ -73,6 +72,8 @@ namespace client {
 			bool removePart( std::string name );
 
 			bool getPartPose( std::string name, geometry_msgs::Pose & part_pose );
+			
+			bool getPartGrabPose( std::string name, geometry_msgs::Pose & part_pose );
 			
 			bool getBinLocation( std::string name, std::vector<std::string> & jn, std::vector<double> & jv );
 			

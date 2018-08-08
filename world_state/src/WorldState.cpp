@@ -5,7 +5,6 @@
 namespace world {
 	
 	
-	
 		
 	bool WorldState::initializeWorld(){
 		
@@ -576,6 +575,7 @@ namespace world {
 		std::string type = getTypeFromName(req.part_name);
 		if( !m_parts[type][req.part_name].expired() ){
 			
+
 			rsp.part_pose = m_parts[type][req.part_name].lock()->getPose();
 			rsp.success = true;
 		}
@@ -629,4 +629,6 @@ namespace world {
 	}
 					
 
+
+	
 }
