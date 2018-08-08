@@ -9,7 +9,7 @@
 	  
 	  
 	  
-	<node name="scene_collisions_node" pkg="load_scene" type="load_scene_node" />
+	<!-- <node name="scene_collisions_node" pkg="load_scene" type="load_scene_node" /> -->
 	<node name="iiwa14_controller_node"   pkg="iiwa14_controller"   type="iiwa14_controller_node"   output="screen"   launch-prefix="$(arg launch_prefix)" />
 	<node name="controller_server_node"   pkg="controller_server"   type="controller_server_node"   output="screen"   launch-prefix="$(arg launch_prefix)" />
 	<node name="action_manager_node"   pkg="action_manager"   type="action_manager_node"   output="screen"   launch-prefix="$(arg launch_prefix)" />

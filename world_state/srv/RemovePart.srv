@@ -1,0 +1,9 @@
+
+# remove a part from the world
+
+string name
+
+---
+
+bool success
+string message

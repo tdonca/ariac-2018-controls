@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+
+	<arg name="debug" default="false" />
+	  <arg unless="$(arg debug)" name="launch_prefix" value="" />
+	  <arg     if="$(arg debug)" name="launch_prefix" value="gdb --ex run --args" />
+	  
+	  <remap from="joint_states" to="ariac/joint_states" />
+	  
+	  
+	  
+	<node name="load_scene_node" pkg="load_scene" type="load_scene_node" />
+	
+	<node name="world_state_node"   pkg="world_state"   type="world_state_node"   output="screen"   launch-prefix="$(arg launch_prefix)" />
+
+</launch>

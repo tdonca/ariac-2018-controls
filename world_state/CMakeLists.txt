@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(action_manager)
+project(world_state)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -8,13 +8,13 @@ add_compile_options(-std=c++11)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  controller_server
   roscpp
-  roslaunch
   rospy
   message_generation
   geometry_msgs
-  world_state
+  osrf_gear
+  moveit_core
+  moveit_ros_planning_interface 
 )
 
 roslaunch_add_file_check(launch)
@@ -53,16 +53,22 @@ roslaunch_add_file_check(launch)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+  FILES
+    Part.msg
+	Task.msg
+)
 
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
-  DoAction.srv
+	FindPartType.srv
+	MarkPartUsed.srv
+	ReleasePart.srv
+	GetGripperPart.srv
+	GetBoxParts.srv
+	MovePartToBox.srv
+	RemovePart.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -77,6 +83,7 @@ generate_messages(
   DEPENDENCIES
   std_msgs  # Or other packages containing msgs
   geometry_msgs
+  osrf_gear
 )
 
 ################################################
@@ -110,8 +117,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES action_manager
-  CATKIN_DEPENDS controller_server message_runtime 
+  LIBRARIES world_state_client
+  CATKIN_DEPENDS roscpp message_runtime
 #  DEPENDS system_lib
 )
 
@@ -122,13 +129,16 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
- include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
+link_directories(${catkin_LIBRARY_DIRS})
+
+
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/action_manager.cpp
+#   src/${PROJECT_NAME}/world_state.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -136,10 +146,42 @@ include_directories(
 ## either from message generation or dynamic reconfigure
 # add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
+
+
+### Client Library ###
+add_library( ${PROJECT_NAME}_client src/WorldStateClient.cpp )
+target_link_libraries( ${PROJECT_NAME}_client ${catkin_LIBRARIES} )
+add_dependencies( ${PROJECT_NAME}_client ${PROJECT_NAME}_generate_messages_cpp ${catkin_EXPORTED_TARGETS} )
+
+
+
+### World State Node ###
+
+# Add executable file
+add_executable( ${PROJECT_NAME}_node src/world_state_node.cpp )
+add_dependencies( ${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} )
+target_link_libraries( ${PROJECT_NAME}_node ${catkin_LIBRARIES} )
+# Link other class files
+target_sources( ${PROJECT_NAME}_node 
+	PUBLIC 
+		src/WorldState.cpp 
+		src/Part.cpp 
+		src/Bin.cpp 
+		src/Box.cpp 
+		src/Gripper.cpp 
+		src/LogicalCameraSensor.cpp 
+		src/QualityControlSensor.cpp
+		src/IIWA14Robot.cpp 
+		src/StateGraph.cpp	
+)
+
+
+
+
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/action_manager_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/world_state_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -149,19 +191,12 @@ add_executable(${PROJECT_NAME}_node src/action_manager_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_node
-  ${catkin_LIBRARIES}
-)
-
-## Add extra source files
-target_sources( ${PROJECT_NAME}_node
-	PUBLIC
-		src/ActionManager.cpp
-)
-
+# target_link_libraries(${PROJECT_NAME}_node
+#   ${catkin_LIBRARIES}
+# )
 
 #############
 ## Install ##
@@ -177,19 +212,18 @@ target_sources( ${PROJECT_NAME}_node
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
 
-## Mark executables and/or libraries for installation
-# install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_node
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+## installing the controller client as a library for other packages to use
+install(TARGETS ${PROJECT_NAME}_client
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
+        
 
-## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-# )
+## Install project namespaced headers
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.hpp"
+  PATTERN ".svn" EXCLUDE)
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
@@ -203,7 +237,7 @@ target_sources( ${PROJECT_NAME}_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_action_manager.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_world_state.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

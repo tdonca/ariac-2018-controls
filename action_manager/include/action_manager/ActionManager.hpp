@@ -4,7 +4,7 @@
 #include <controller_server/MoveCartesian.h>
 #include <controller_server/ActivateGripper.h>
 #include <action_manager/DoAction.h>
-
+#include <world_state/WorldStateClient.hpp>
 
 namespace control {
 
@@ -20,6 +20,7 @@ namespace control {
 			ros::ServiceClient pose_srv_;
 			ros::ServiceClient gripper_srv_;
 			ros::ServiceServer action_srv_;
+			client::WorldStateClient world_state_;
 
 
 		public:
@@ -32,7 +33,8 @@ namespace control {
 				joints_srv_(),
 				pose_srv_(),
 				gripper_srv_(),
-				action_srv_()
+				action_srv_(),
+				world_state_()
 
 			{
 				// DEBUG: Wait for startup prints to finish
