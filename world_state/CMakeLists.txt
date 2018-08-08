@@ -69,6 +69,9 @@ add_service_files(
 	GetBoxParts.srv
 	MovePartToBox.srv
 	RemovePart.srv
+	GetPartPose.srv
+	GetBinLocation.srv
+	GetBoxLocation.srv
 )
 
 ## Generate actions in the 'action' folder

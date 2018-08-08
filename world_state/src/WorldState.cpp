@@ -68,6 +68,9 @@ namespace world {
 		m_box_parts_srv = 			m_node.advertiseService( "box_parts", &WorldState::sv_getBoxParts, this );
 		m_move_part_to_box_srv = 	m_node.advertiseService( "move_part_to_box", &WorldState::sv_movePartToBox, this );
 		m_remove_part_srv = 		m_node.advertiseService( "remove_part", &WorldState::sv_removePart, this );
+		m_part_pose_srv =			m_node.advertiseService( "get_part_pose", &WorldState::sv_getPartPose, this );
+		m_bin_location_srv =		m_node.advertiseService( "get_bin_location", &WorldState::sv_getBinLocation, this );
+		m_box_location_srv =		m_node.advertiseService( "get_box_location", &WorldState::sv_getBoxLocation, this );
 			
 		return true;
 	}
@@ -524,7 +527,7 @@ namespace world {
 			else{
 				rsp.success = false;
 				rsp.message = "No boxes in the world.";
-				return false;
+				return true;
 			}
 		}
 		else{
@@ -553,7 +556,7 @@ namespace world {
 			else{
 				rsp.success = false;
 				rsp.message = "No boxes in the world.";
-				return false;
+				return true;
 			}
 		}
 		else{
@@ -565,7 +568,65 @@ namespace world {
 	}
 			
 			
+	
+
+	bool WorldState::sv_getPartPose( world_state::GetPartPose::Request & req, world_state::GetPartPose::Response & rsp ){
+
+		// check that the part exists
+		std::string type = getTypeFromName(req.part_name);
+		if( !m_parts[type][req.part_name].expired() ){
 			
+			rsp.part_pose = m_parts[type][req.part_name].lock()->getPose();
+			rsp.success = true;
+		}
+		else{
+			rsp.success = false;
+			rsp.message = "Could not find the part: " + req.part_name;	
+		}
+
+		return true;
+	}
+			
+	
+
+	bool WorldState::sv_getBinLocation( world_state::GetBinLocation::Request & req, world_state::GetBinLocation::Response & rsp ){
+
+		State tmp;
+		if( m_graph.findState(req.bin_name, tmp) ){
+			// TODO: Remove this hardcoding of joint names!
+			rsp.joint_names = { "linear_arm_actuator_joint", "iiwa_joint_1", "iiwa_joint_2", "iiwa_joint_3", "iiwa_joint_4", "iiwa_joint_5", "iiwa_joint_6", "iiwa_joint_7"};
+			rsp.joint_values = tmp.joint_values;
+			rsp.success = true;
+		}
+		else{
+			rsp.success = false;
+			rsp.message = "Could not find the bin: %s", req.bin_name.c_str();
+		}
+
+		return true;
+	}
+			
+	
+
+
+	bool WorldState::sv_getBoxLocation( world_state::GetBoxLocation::Request & req, world_state::GetBoxLocation::Response & rsp ){
+
+		State tmp;
+		if( m_graph.findState(req.box_name, tmp) ){
+			// TODO: Remove this hardcoding of joint names!
+			rsp.joint_names = { "linear_arm_actuator_joint", "iiwa_joint_1", "iiwa_joint_2", "iiwa_joint_3", "iiwa_joint_4", "iiwa_joint_5", "iiwa_joint_6", "iiwa_joint_7"};
+			rsp.joint_values = tmp.joint_values;
+			rsp.success = true;
+		}
+		else{
+			rsp.success = false;
+			rsp.message = "Could not find the box: %s", req.box_name.c_str();
+		}
+
+		return true;
+
+
+	}
 					
 
 }

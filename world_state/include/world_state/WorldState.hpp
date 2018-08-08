@@ -26,6 +26,9 @@
 #include <world_state/GetBoxParts.h>
 #include <world_state/MovePartToBox.h>
 #include <world_state/RemovePart.h>
+#include <world_state/GetPartPose.h>
+#include <world_state/GetBinLocation.h>
+#include <world_state/GetBoxLocation.h>
 
 
 namespace world {
@@ -47,6 +50,7 @@ namespace world {
 				m_gripper("Gripper"),
 				m_parts(),
 				m_robot(),
+				m_graph(),
 				m_tf_list(),
 				m_node(),
 				m_update_t(),
@@ -58,6 +62,9 @@ namespace world {
 				m_box_parts_srv(),
 				m_move_part_to_box_srv(),
 				m_remove_part_srv(),
+				m_part_pose_srv(),
+				m_bin_location_srv(),
+				m_box_location_srv(),
 				m_tfBuf(),
 				m_tfListener(m_tfBuf),
 				m_move_group("manipulator")
@@ -107,6 +114,12 @@ namespace world {
 			bool sv_movePartToBox( world_state::MovePartToBox::Request & req, world_state::MovePartToBox::Response & rsp );
 			
 			bool sv_removePart( world_state::RemovePart::Request & req, world_state::RemovePart::Response & rsp );
+
+			bool sv_getPartPose( world_state::GetPartPose::Request & req, world_state::GetPartPose::Response & rsp );
+			
+			bool sv_getBinLocation( world_state::GetBinLocation::Request & req, world_state::GetBinLocation::Response & rsp );
+			
+			bool sv_getBoxLocation( world_state::GetBoxLocation::Request & req, world_state::GetBoxLocation::Response & rsp );
 			
 		private:
 		
@@ -138,6 +151,9 @@ namespace world {
 			ros::ServiceServer m_box_parts_srv;
 			ros::ServiceServer m_move_part_to_box_srv;
 			ros::ServiceServer m_remove_part_srv;
+			ros::ServiceServer m_part_pose_srv;
+			ros::ServiceServer m_bin_location_srv;
+			ros::ServiceServer m_box_location_srv;
 			
 			tf2_ros::Buffer m_tfBuf;
 			tf2_ros::TransformListener m_tfListener;

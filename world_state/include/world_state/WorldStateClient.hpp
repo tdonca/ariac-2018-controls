@@ -9,6 +9,10 @@
 #include <world_state/GetBoxParts.h>
 #include <world_state/MovePartToBox.h>
 #include <world_state/RemovePart.h>
+#include <world_state/GetPartPose.h>
+#include <world_state/GetBinLocation.h>
+#include <world_state/GetBoxLocation.h>
+
 
 
 namespace client {
@@ -28,7 +32,10 @@ namespace client {
 				m_gripper_part_srv(),
 				m_box_parts_srv(),
 				m_move_part_to_box_srv(),
-				m_remove_part_srv()
+				m_remove_part_srv(),
+				m_part_pose_srv(),
+				m_bin_location_srv(),
+				m_box_location_srv()
 			
 			{
 				m_find_part_type_srv = m_node.serviceClient<world_state::FindPartType>("find_part_type");
@@ -40,6 +47,9 @@ namespace client {
 				m_move_part_to_box_srv = m_node.serviceClient<world_state::MovePartToBox>("move_part_to_box");
 				m_remove_part_srv = m_node.serviceClient<world_state::RemovePart>("remove_part");
 				
+				m_part_pose_srv = m_node.serviceClient<world_state::GetPartPose>("get_part_pose");
+				m_bin_location_srv = m_node.serviceClient<world_state::GetBinLocation>("get_bin_location");
+				m_box_location_srv = m_node.serviceClient<world_state::GetBoxLocation>("get_box_location");
 				
 				//test();
 				
@@ -61,6 +71,14 @@ namespace client {
 			bool movePartToBox( std::string name );
 			
 			bool removePart( std::string name );
+
+			bool getPartPose( std::string name, geometry_msgs::Pose & part_pose );
+			
+			bool getBinLocation( std::string name, std::vector<std::string> & jn, std::vector<double> & jv );
+			
+			bool getBoxLocation( std::string name, std::vector<std::string> & jn, std::vector<double> & jv );
+
+
 		
 		private:
 		
@@ -76,6 +94,9 @@ namespace client {
 			ros::ServiceClient m_box_parts_srv;
 			ros::ServiceClient m_move_part_to_box_srv;
 			ros::ServiceClient m_remove_part_srv;
+			ros::ServiceClient m_part_pose_srv;
+			ros::ServiceClient m_bin_location_srv;
+			ros::ServiceClient m_box_location_srv;
 		
 	};
 	

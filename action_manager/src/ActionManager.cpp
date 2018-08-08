@@ -47,7 +47,7 @@ namespace control {
 	bool ActionManager::approachPart( std::string part_name, std::string & error_message ){
 
 
-
+		
 		return true;
 	}
 

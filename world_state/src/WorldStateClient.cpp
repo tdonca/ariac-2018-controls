@@ -209,7 +209,93 @@ namespace client {
 	}		
 			
 			
+	
+	bool WorldStateClient::getPartPose( std::string name, geometry_msgs::Pose & part_pose ){
+
+		world_state::GetPartPose pp_srv;
+		pp_srv.request.part_name = name;
+		
+		if( m_part_pose_srv.call(pp_srv) ){
+			if( pp_srv.response.success ){
+
+				part_pose = pp_srv.response.part_pose;
+				return true;
+			}
+			else{
+				ROS_ERROR("Fail: %s", pp_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Error calling GetPartPose service.");
+			return false;
+		}
+	}
 			
+	
+
+
+	bool WorldStateClient::getBinLocation( std::string name, std::vector<std::string> & jn, std::vector<double> & jv ){
+
+		world_state::GetBinLocation bl_srv;
+		bl_srv.request.bin_name = name;
+		
+		if( m_bin_location_srv.call(bl_srv) ){
+			if( bl_srv.response.success ){
+
+				jn = bl_srv.response.joint_names;
+				jv = bl_srv.response.joint_values;
+				return true;
+			}
+			else{
+				ROS_ERROR("Fail: %s", bl_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Error calling GetBinLocation service.");
+			return false;
+		}
+	}
+			
+	
+
+
+	bool WorldStateClient::getBoxLocation( std::string name, std::vector<std::string> & jn, std::vector<double> & jv ){
+
+		world_state::GetBoxLocation bl_srv;
+		bl_srv.request.box_name = name;
+		
+		if( m_bin_location_srv.call(bl_srv) ){
+			if( bl_srv.response.success ){
+
+				jn = bl_srv.response.joint_names;
+				jv = bl_srv.response.joint_values;
+				return true;
+			}
+			else{
+				ROS_ERROR("Fail: %s", bl_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Error calling GetBoxLocation service.");
+			return false;
+		}
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
 	
 	void getRPY( const geometry_msgs::Pose  pose, double & r, double & p, double & y ){
 		

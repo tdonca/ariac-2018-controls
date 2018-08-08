@@ -1,0 +1,11 @@
+# Return the joint value positions associated with the specified box
+
+string box_name
+
+---
+
+string[] joint_names
+float64[] joint_values
+
+bool success
+string message

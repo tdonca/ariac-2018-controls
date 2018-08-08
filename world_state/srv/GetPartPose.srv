@@ -1,0 +1,10 @@
+# Return the most recent pose for a specified part
+
+string part_name
+
+---
+
+geometry_msgs/Pose part_pose
+
+bool success
+string message
