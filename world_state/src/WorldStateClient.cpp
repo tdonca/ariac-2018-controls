@@ -342,7 +342,7 @@ namespace client {
 		world_state::GetBoxLocation bl_srv;
 		bl_srv.request.box_name = name;
 		
-		if( m_bin_location_srv.call(bl_srv) ){
+		if( m_box_location_srv.call(bl_srv) ){
 			if( bl_srv.response.success ){
 
 				jn = bl_srv.response.joint_names;

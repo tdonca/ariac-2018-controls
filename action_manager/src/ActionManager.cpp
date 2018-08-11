@@ -171,7 +171,40 @@ namespace control {
 
 	bool ActionManager::placePart( geometry_msgs::Pose goal_pose, std::string & error_message ){
 
+		// // Move part to the goal pose
+		// controller_server::MoveCartesian c_srv;
+		// c_srv.request.waypoints.push_back(pose);
+		// if( cartesian_srv_.call(c_srv) ){
+		// 	if( c_srv.response.success ){
+		// 		ROS_INFO("Robot successfully moved to goal pose.");
+		// 	}
+		// 	else{
+		// 		ROS_ERROR("Fail: %s", c_srv.response.message.c_str());
+		// 		return false;
+		// 	}
+		// }
+		// else{
+		// 	ROS_ERROR("Could not call MoveCartesian srv");
+		// 	return false;
+		// }
 
+
+		// Deactivate gripper
+		controller_server::ActivateGripper g_srv;
+		g_srv.request.enable = false;
+		if( gripper_srv_.call(g_srv) ){
+			if( g_srv.response.success ){
+				ROS_INFO("Robot successfully placed the part.");
+			}
+			else{
+				ROS_ERROR("Fail: %s", g_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call ActivateGripper srv");
+			return false;
+		}
 
 		return true;
 	}
@@ -214,7 +247,34 @@ namespace control {
 
 	bool ActionManager::moveToBox( std::string box_name, std::string & error_message ){
 
+		// Get joint values for the box
+		std::vector<std::string> jn;
+		std::vector<double> jv;
+		if( world_state_.getBoxLocation( box_name, jn, jv ) ){
+			ROS_INFO("%s location found.", box_name.c_str());
+		}
+		else{
+			ROS_ERROR("Could not find the location of box: %s", box_name.c_str());
+			return false;
+		}
 
+		// Move robot to the box
+		controller_server::MoveJoints j_srv;
+		j_srv.request.joint_names = jn;
+		j_srv.request.joint_values = jv;
+		if( joints_srv_.call(j_srv) ){
+			if( j_srv.response.success ){
+				ROS_INFO("Robot successfully moved to box: %s", box_name.c_str());
+			}
+			else{
+				ROS_ERROR("Fail: %s", j_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call MoveJoints srv");
+			return false;
+		}
 
 
 		return true;

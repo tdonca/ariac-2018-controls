@@ -622,7 +622,7 @@ namespace world {
 		}
 		else{
 			rsp.success = false;
-			rsp.message = "Could not find the box: %s", req.box_name.c_str();
+			rsp.message = "Could not find the box: " + req.box_name;
 		}
 
 		return true;
