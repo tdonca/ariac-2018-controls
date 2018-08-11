@@ -5,6 +5,7 @@ string part_name
 ---
 
 geometry_msgs/Pose part_pose
+float64 offset
 
 bool success
 string message

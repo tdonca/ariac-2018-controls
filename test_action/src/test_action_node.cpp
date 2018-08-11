@@ -16,20 +16,20 @@ int main( int argc, char* argv[] ){
 
 	//Test
 	ros::ServiceClient action_srv = node.serviceClient<action_manager::DoAction>( "action_manager/do_action" );
-	action_manager::DoAction a_srv;
 
 
 	
 
 	while(getchar()) {
 		
-		ROS_INFO("Tasks \n1: approach_part \n2: move_to_bin");
+		ROS_INFO("Tasks \n1: approach_part \n2: move_to_bin \n3: grab_part ");
 		int i;
 		std::string task_name;
 		std::cin>>i;
 
 
 		if( i == 1){
+			action_manager::DoAction a_srv;
 			a_srv.request.action = "approach_part";
 			a_srv.request.part_name = "gear_part_8";
 
@@ -47,11 +47,29 @@ int main( int argc, char* argv[] ){
 		}
 
 		else if (i == 2){
+			action_manager::DoAction a_srv;
 			a_srv.request.action = "move_to_bin";
 			a_srv.request.bin_name = "BIN1";
 			if( action_srv.call(a_srv) ){
 				if(a_srv.response.success){
 					ROS_INFO("Move to bin succeeded");
+				}
+				else{
+					ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+				}
+			}
+			else{
+				ROS_ERROR("Could not call DoAction.");
+			}
+		}
+
+		else if (i == 3){
+			action_manager::DoAction a_srv;
+			a_srv.request.action = "grab_part";
+			a_srv.request.part_name = "gear_part_8";
+			if( action_srv.call(a_srv) ){
+				if(a_srv.response.success){
+					ROS_INFO("Grab part succeeded");
 				}
 				else{
 					ROS_ERROR("Fail: %s", a_srv.response.message.c_str());

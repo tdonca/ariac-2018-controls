@@ -4,7 +4,8 @@
 
 namespace world {
 	
-	
+	double partOffset( std::string type );
+
 		
 	bool WorldState::initializeWorld(){
 		
@@ -577,6 +578,7 @@ namespace world {
 			
 
 			rsp.part_pose = m_parts[type][req.part_name].lock()->getPose();
+			rsp.offset = partOffset(type);
 			rsp.success = true;
 		}
 		else{
@@ -629,6 +631,32 @@ namespace world {
 	}
 					
 
+
+	//****************Helper Functions
+
+
+	double partOffset( std::string type ){
+		
+		if( type == "gear_part" ){
+			return 0.012;
+		}
+		else if( type == "disk_part" ){
+			return 0.023;
+		}
+		else if( type == "piston_rod_part" ){
+			return 0.0075;
+		}
+		else if( type == "gasket_part" ){
+			return 0.02;
+		}
+		else if( type == "pulley_part" ){
+			return 0.07;
+		}
+		else{
+			ROS_ERROR("Invalid part type, could not determine offset.");
+			return 0.0;
+		}
+	}
 
 	
 }

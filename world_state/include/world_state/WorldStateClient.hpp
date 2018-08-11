@@ -73,6 +73,8 @@ namespace client {
 
 			bool getPartPose( std::string name, geometry_msgs::Pose & part_pose );
 			
+			bool getPartAbovePose( std::string name, geometry_msgs::Pose & part_pose );
+			
 			bool getPartGrabPose( std::string name, geometry_msgs::Pose & part_pose );
 			
 			bool getBinLocation( std::string name, std::vector<std::string> & jn, std::vector<double> & jv );

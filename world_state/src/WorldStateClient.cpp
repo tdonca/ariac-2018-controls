@@ -248,7 +248,37 @@ namespace client {
 			return false;
 		}
 	}
-			
+		
+
+	bool WorldStateClient::getPartAbovePose( std::string name, geometry_msgs::Pose & part_pose ){
+
+		world_state::GetPartPose pp_srv;
+		pp_srv.request.part_name = name;
+		
+		if( m_part_pose_srv.call(pp_srv) ){
+			if( pp_srv.response.success ){
+
+				part_pose = pp_srv.response.part_pose;
+
+				// Flip Z-axis orientation to match robot EE
+				double part_r, part_p, part_y;
+				getRPY( part_pose, part_r, part_p, part_y );
+				setRPY( part_r+3.14159, part_p, part_y, part_pose );
+				// Offset to stop right above the part
+				part_pose.position.z+= pp_srv.response.offset + 0.05;
+				return true;
+			}
+			else{
+				ROS_ERROR("Fail: %s", pp_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Error calling GetPartPose service.");
+			return false;
+		}
+	}
+
 
 			
 	bool WorldStateClient::getPartGrabPose( std::string name, geometry_msgs::Pose & part_pose ){
@@ -266,7 +296,7 @@ namespace client {
 				getRPY( part_pose, part_r, part_p, part_y );
 				setRPY( part_r+3.14159, part_p, part_y, part_pose );
 				// Offset to stop right above the part
-				part_pose.position.z+= 0.05;
+				part_pose.position.z+= pp_srv.response.offset;
 				return true;
 			}
 			else{

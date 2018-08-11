@@ -48,9 +48,9 @@ namespace control {
 
 	bool ActionManager::approachPart( std::string part_name, std::string & error_message ){
 
-		// Get current part's grab pose
+		// Get current part's above-pose
 		geometry_msgs::Pose pose;
-		if( world_state_.getPartGrabPose( part_name, pose ) ){
+		if( world_state_.getPartAbovePose( part_name, pose ) ){
 			ROS_INFO("%s found at pose: %.3f %.3f %.3f", part_name.c_str(), pose.position.x, pose.position.y, pose.position.z);
 		}	
 		else{
@@ -82,10 +82,90 @@ namespace control {
 
 	bool ActionManager::grabPart( std::string part_name, std::string & error_message ){
 
+		// Get current part's grab-pose
+		geometry_msgs::Pose pose;
+		if( world_state_.getPartGrabPose( part_name, pose ) ){
+			ROS_INFO("%s found at pose: %.3f %.3f %.3f", part_name.c_str(), pose.position.x, pose.position.y, pose.position.z);
+		}	
+		else{
+			error_message = "Could not get pose of: " + part_name;
+			return false;
+		}
 
 
+		// Make sure the gripper is off
+		controller_server::ActivateGripper g_srv;
+		g_srv.request.enable = false;
+		if( gripper_srv_.call(g_srv) ){
+			if( g_srv.response.success ){
+				ROS_INFO("Gripper deactivated.");
+			}
+			else{
+				ROS_ERROR("Fail: %s", g_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call ActivateGripper srv");
+			return false;
+		}
+
+
+
+		// Move robot to the part
+		controller_server::MoveCartesian c_srv;
+		c_srv.request.waypoints.push_back(pose);
+		if( cartesian_srv_.call(c_srv) ){
+			if( c_srv.response.success ){
+				ROS_INFO("Robot successfully moved to part pose.");
+			}
+			else{
+				ROS_ERROR("Fail: %s", c_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call MoveCartesian srv");
+			return false;
+		}
+
+
+		// Grab the part with the gripper
+		g_srv.request.enable = true;
+		if( gripper_srv_.call(g_srv) ){
+			if( g_srv.response.success ){
+				ROS_INFO("Robot successfully grabbed the part.");
+			}
+			else{
+				ROS_ERROR("Fail: %s", g_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call ActivateGripper srv");
+			return false;
+		}
+
+
+		// Lift part up
+		pose.position.z += 0.05;
+		c_srv.request.waypoints[0] = pose;
+		if( cartesian_srv_.call(c_srv) ){
+			if( c_srv.response.success ){
+				ROS_INFO("Robot successfully moved to above pose.");
+			}
+			else{
+				ROS_ERROR("Fail: %s", c_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call MoveCartesian srv");
+			return false;
+		}
 
 		return true;
+
 	}
 
 

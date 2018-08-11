@@ -57,8 +57,8 @@ namespace iiwa14 {
 		moveit::planning_interface::MoveGroupInterface::Plan plan;
 		while(attempts < 5) {
 			double fraction = move_group_.computeCartesianPath( waypoints, 0.001, 0.0, plan.trajectory_ );
-			if(fraction == 1) {
-				ROS_INFO("Successfully computed the cartesian path.");
+			if(fraction > 0.90 ) {
+				ROS_INFO("Successfully computed the cartesian path: %.3f.", fraction*100 );
 				found = true;
 				break;
 			}
@@ -179,11 +179,13 @@ namespace iiwa14 {
 
 	bool IIWA14Controller::executeGripper( bool enable, std::string & error_message ){
 
+		ros::Duration(0.2).sleep();
 		osrf_gear::VacuumGripperControl g_srv;
 		g_srv.request.enable = enable;
 		if( vacuum_srv_.call(g_srv) ){
 			if( g_srv.response.success ){
 				ROS_INFO("Successfully toggled the gripper.");
+				ros::Duration(0.2).sleep();
 				return true;
 			}	
 			else{
