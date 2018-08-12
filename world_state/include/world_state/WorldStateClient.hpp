@@ -14,6 +14,7 @@
 #include <world_state/GetBoxLocation.h>
 #include <world_state/ComputeGoalPose.h>
 #include <world_state/GetPartContainer.h>
+#include <osrf_gear/VacuumGripperState.h>
 
 
 
@@ -40,6 +41,8 @@ namespace client {
 			ros::ServiceClient m_box_location_srv;
 			ros::ServiceClient m_goal_pose_srv;
 			ros::ServiceClient m_part_container_srv;
+			ros::Subscriber m_gripper_state_sub;
+			bool m_gripper_has_part;
 
 
 		public:
@@ -56,7 +59,9 @@ namespace client {
 				m_bin_location_srv(),
 				m_box_location_srv(),
 				m_goal_pose_srv(),
-				m_part_container_srv()
+				m_part_container_srv(),
+				m_gripper_state_sub(),
+				m_gripper_has_part(false)
 			
 			{	
 				ROS_INFO("WorldStateClient is waiting for services to appear...");
@@ -86,7 +91,9 @@ namespace client {
 				m_goal_pose_srv.waitForExistence();
 				m_part_container_srv.waitForExistence();
 				ROS_INFO("WorldStateClient services have appeared.");
-				//TODO: waitForService for all services
+
+
+				m_gripper_state_sub = m_node.subscribe( "ariac/gripper/state", 1, &WorldStateClient::cb_gripperState, this);
 				
 			}
 			
@@ -125,11 +132,14 @@ namespace client {
 
 			bool getPartContainer( std::string part_name, std::string & container_name );
 
+			bool gripperHasPart();
+
 		
 		private:
 		
 			void test();
 			
+			void cb_gripperState( const osrf_gear::VacuumGripperState::ConstPtr & msg );
 			
 			
 		

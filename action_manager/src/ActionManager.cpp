@@ -109,13 +109,11 @@ namespace control {
 				}
 				else{
 					ROS_ERROR("Fail: %s", g_srv.response.message.c_str());
-					continue;
 				}
 			}
 			else{
 				error_message = "Could not call ActivateGripper srv";
 				ROS_ERROR("%s", error_message.c_str());
-				continue;
 			}
 
 
@@ -130,13 +128,11 @@ namespace control {
 				else{
 					error_message = c_srv.response.message;
 					ROS_ERROR("Fail: %s", c_srv.response.message.c_str());
-					continue;
 				}
 			}
 			else{
 				error_message = "Could not call MoveCartesian srv";
 				ROS_ERROR("%s", error_message.c_str());
-				continue;
 			}
 
 
@@ -144,19 +140,16 @@ namespace control {
 			g_srv.request.enable = true;
 			if( gripper_srv_.call(g_srv) ){
 				if( g_srv.response.success ){
-					ROS_INFO("Robot successfully grabbed the part.");
-
+					ROS_INFO("Activated the gripper.");
 				}
 				else{
 					error_message = g_srv.response.message;
 					ROS_ERROR("Fail: %s", g_srv.response.message.c_str());
-					continue;
 				}
 			}
 			else{
 				error_message = "Could not call ActivateGripper srv";
 				ROS_ERROR("%s", error_message.c_str());
-				continue;
 			}
 
 
@@ -167,18 +160,22 @@ namespace control {
 				if( c_srv.response.success ){
 					ROS_INFO("Robot successfully moved to above pose.");
 					error_message = "";
-					return true;
 				}
 				else{
 					error_message = c_srv.response.message;
 					ROS_ERROR("Fail: %s", c_srv.response.message.c_str());
-					continue;
 				}
 			}
 			else{
 				error_message = "Could not call MoveCartesian srv";
 				ROS_ERROR("%s", error_message.c_str());
-				continue;
+			}
+
+
+			// Check that the part is held
+			if( world_state_.gripperHasPart() ){
+				ROS_INFO("Robot is successfully holding the part.");
+				return true;
 			}
 
 		}

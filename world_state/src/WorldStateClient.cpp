@@ -462,4 +462,25 @@ namespace client {
 
 	}
 
+
+	bool WorldStateClient::gripperHasPart(){
+
+		return m_gripper_has_part;	
+	}
+
+
+
+
+
+
+
+
+
+
+	void WorldStateClient::cb_gripperState( const osrf_gear::VacuumGripperState::ConstPtr & msg ){
+
+		m_gripper_has_part = msg->attached;
+	}
+
+
 }

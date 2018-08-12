@@ -132,8 +132,8 @@ void TestOrder::cb_fillOrder( const osrf_gear::Order::ConstPtr & msg ){
 	}
 
 
-	ROS_INFO("Press for next step...");
-	std::cin >> i;
+	// ROS_INFO("Press for next step...");
+	// std::cin >> i;
 
 
 	// grab part
@@ -154,8 +154,8 @@ void TestOrder::cb_fillOrder( const osrf_gear::Order::ConstPtr & msg ){
 		return;
 	}
 
-	ROS_INFO("Press for next step...");
-	std::cin >> i;
+	// ROS_INFO("Press for next step...");
+	// std::cin >> i;
 
 	// move to bin
 	a_srv = clear;
@@ -199,7 +199,7 @@ void TestOrder::cb_fillOrder( const osrf_gear::Order::ConstPtr & msg ){
 	//move to facebin by box
 	a_srv = clear;
 	a_srv.request.action = "move_to_bin";
-	a_srv.request.bin_name = "FACEBIN3"; 
+	a_srv.request.bin_name = "FACEBIN2"; 
 	if( action_srv_.call(a_srv) ){
 		if(a_srv.response.success){
 			ROS_INFO("Move to bin succeeded");
@@ -236,8 +236,8 @@ void TestOrder::cb_fillOrder( const osrf_gear::Order::ConstPtr & msg ){
 
 
 
-	ROS_INFO("Press for next step...");
-	std::cin >> i;
+	// ROS_INFO("Press for next step...");
+	// std::cin >> i;
 
 
 	// place part in goal pose
