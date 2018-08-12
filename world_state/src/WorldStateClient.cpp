@@ -417,6 +417,14 @@ namespace client {
 			if( gp_srv.response.success ){
 				ROS_INFO("Successfully computed goal pose.");
 				goal_pose = gp_srv.response.goal_pose;
+
+				// Flip Z-axis orientation to match robot EE
+				double part_r, part_p, part_y;
+				getRPY( goal_pose, part_r, part_p, part_y );
+				setRPY( part_r+3.14159, part_p, part_y, goal_pose );
+				// Offset to stop right above the part
+				goal_pose.position.z+= 0.07;
+
 				return true;
 			}
 			else{
@@ -427,9 +435,31 @@ namespace client {
 		else{
 			ROS_ERROR("Error calling ComputeGoalPose service.");
 			return false;
-		}
+		}	
+	}
 
-		
+
+
+	bool WorldStateClient::getPartContainer( std::string part_name, std::string & container_name ){
+
+		world_state::GetPartContainer p_srv;
+		p_srv.request.part_name = part_name;
+		if( m_part_container_srv.call(p_srv) ){
+			if( p_srv.response.success ){
+				ROS_INFO("Successfully located the part in container: %s", p_srv.response.container.c_str());
+				container_name = p_srv.response.container;
+				return true;
+			}
+			else{
+				ROS_ERROR("Fail: %s", p_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Error calling GetPartContainer service.");
+			return false;
+		}	
+
 	}
 
 }

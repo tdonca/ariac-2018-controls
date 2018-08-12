@@ -31,6 +31,7 @@
 #include <world_state/GetBinLocation.h>
 #include <world_state/GetBoxLocation.h>
 #include <world_state/ComputeGoalPose.h>
+#include <world_state/GetPartContainer.h>
 
 
 
@@ -69,6 +70,7 @@ namespace world {
 			ros::ServiceServer m_bin_location_srv;
 			ros::ServiceServer m_box_location_srv;
 			ros::ServiceServer m_goal_pose_srv;
+			ros::ServiceServer m_part_info_srv;
 			tf2_ros::Buffer m_tfBuf;
 			tf2_ros::TransformListener m_tfListener;
 			moveit::planning_interface::MoveGroupInterface m_move_group;
@@ -101,6 +103,7 @@ namespace world {
 				m_bin_location_srv(),
 				m_box_location_srv(),
 				m_goal_pose_srv(),
+				m_part_info_srv(),
 				m_tfBuf(),
 				m_tfListener(m_tfBuf),
 				m_move_group("manipulator")
@@ -158,6 +161,8 @@ namespace world {
 			bool sv_getBoxLocation( world_state::GetBoxLocation::Request & req, world_state::GetBoxLocation::Response & rsp );
 			
 			bool sv_computeGoalPose( world_state::ComputeGoalPose::Request & req, world_state::ComputeGoalPose::Response & rsp );
+			
+			bool sv_getPartContainer( world_state::GetPartContainer::Request & req, world_state::GetPartContainer::Response & rsp );
 			
 		private:
 		

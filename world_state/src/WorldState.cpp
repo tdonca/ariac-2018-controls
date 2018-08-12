@@ -72,6 +72,7 @@ namespace world {
 		m_bin_location_srv =		m_node.advertiseService( "get_bin_location", &WorldState::sv_getBinLocation, this );
 		m_box_location_srv =		m_node.advertiseService( "get_box_location", &WorldState::sv_getBoxLocation, this );
 		m_goal_pose_srv =			m_node.advertiseService( "compute_goal_pose", &WorldState::sv_computeGoalPose, this );
+		m_part_info_srv =			m_node.advertiseService( "get_part_container", &WorldState::sv_getPartContainer, this );
 			
 		return true;
 	}
@@ -576,17 +577,23 @@ namespace world {
 
 		// check that the part exists
 		std::string type = getTypeFromName(req.part_name);
-		if( !m_parts[type][req.part_name].expired() ){
-			
-
-			rsp.part_pose = m_parts[type][req.part_name].lock()->getPose();
-			rsp.offset = partOffset(type);
-			rsp.success = true;
+		if( type != "gear_part" && type != "gasket_part" && type != "disk_part" && type != "pulley_part" && type != "piston_rod_part" ){
+			rsp.success = false;
+			rsp.message = "Did not provide a valid part name";
 		}
 		else{
-			rsp.success = false;
-			rsp.message = "Could not find the part: " + req.part_name;	
+			if( !m_parts[type][req.part_name].expired() ){
+				
+				rsp.part_pose = m_parts[type][req.part_name].lock()->getPose();
+				rsp.offset = partOffset(type);
+				rsp.success = true;
+			}
+			else{
+				rsp.success = false;
+				rsp.message = "Could not find the part: " + req.part_name;	
+			}
 		}
+		
 
 		return true;
 	}
@@ -653,6 +660,27 @@ namespace world {
 		return true;
 	}
 
+
+	bool WorldState::sv_getPartContainer( world_state::GetPartContainer::Request & req, world_state::GetPartContainer::Response & rsp ){
+
+		std::string type = getTypeFromName(req.part_name);
+		if( type != "gear_part" && type != "gasket_part" && type != "disk_part" && type != "pulley_part" && type != "piston_rod_part" ){
+			rsp.success = false;
+			rsp.message = "Did not provide a valid part name";
+		}
+		else{
+			if( !m_parts[type][req.part_name].expired() ){
+				rsp.container = m_parts[type][req.part_name].lock()->getLocation()->getName();
+				rsp.success = true;
+			}
+			else{
+				rsp.success = false;
+				rsp.message = "Could not find the part: " + req.part_name;	
+			}
+		}
+		
+		return true;
+	}  	 
 
 
 

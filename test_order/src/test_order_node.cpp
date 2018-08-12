@@ -46,12 +46,14 @@ void TestOrder::cb_fillOrder( const osrf_gear::Order::ConstPtr & msg ){
 	// for(int i = 0; i < msg->shipments[0].products.size(); ++i ){
 		
 	// }
-
+	char i;
 	std::string type = msg->shipments[0].products[0].type;
 	std::string name;
+	std::string container;
 	action_manager::DoAction clear;
 	action_manager::DoAction a_srv;
 	
+
 	//find part 
 	if( world_client_.findPartOfType(type, name) ){
 		ROS_INFO("Found part: %s", name.c_str());
@@ -61,21 +63,54 @@ void TestOrder::cb_fillOrder( const osrf_gear::Order::ConstPtr & msg ){
 		return;
 	}
 
-	//move to bin
+	//find container
+	if( world_client_.getPartContainer(name, container) ){
+		ROS_INFO("Found part container: %s", container.c_str());
+	}
+	else{
+		ROS_ERROR("Could not find container of part: %s", name.c_str());
+		return;
+	}
+
+
+
+	//move to facebin
 	a_srv = clear;
 	a_srv.request.action = "move_to_bin";
-	a_srv.request.bin_name = "BIN1"; // CLIENT
+	a_srv.request.bin_name = "FACE" + container; // CLIENT
 	if( action_srv_.call(a_srv) ){
 		if(a_srv.response.success){
 			ROS_INFO("Move to bin succeeded");
 		}
 		else{
 			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+			return;
 		}
 	}
 	else{
 		ROS_ERROR("Could not call DoAction.");
+		return;
 	}
+
+
+	//move to bin
+	a_srv = clear;
+	a_srv.request.action = "move_to_bin";
+	a_srv.request.bin_name = container; // CLIENT
+	if( action_srv_.call(a_srv) ){
+		if(a_srv.response.success){
+			ROS_INFO("Move to bin succeeded");
+		}
+		else{
+			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+			return;
+		}
+	}
+	else{
+		ROS_ERROR("Could not call DoAction.");
+		return;
+	}
+
 
 	// approach part
 	a_srv = clear;
@@ -88,11 +123,18 @@ void TestOrder::cb_fillOrder( const osrf_gear::Order::ConstPtr & msg ){
 		}
 		else{
 			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+			return;
 		}
 	}
 	else{
 		ROS_ERROR("Could not call DoAction.");
+		return;
 	}
+
+
+	ROS_INFO("Press for next step...");
+	std::cin >> i;
+
 
 	// grab part
 	a_srv = clear;
@@ -104,27 +146,75 @@ void TestOrder::cb_fillOrder( const osrf_gear::Order::ConstPtr & msg ){
 		}
 		else{
 			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+			return;
 		}
 	}
 	else{
 		ROS_ERROR("Could not call DoAction.");
+		return;
 	}
+
+	ROS_INFO("Press for next step...");
+	std::cin >> i;
 
 	// move to bin
 	a_srv = clear;
 	a_srv.request.action = "move_to_bin";
-	a_srv.request.bin_name = "BIN1"; // CLIENT
+	a_srv.request.bin_name = container; // CLIENT
 	if( action_srv_.call(a_srv) ){
 		if(a_srv.response.success){
 			ROS_INFO("Move to bin succeeded");
 		}
 		else{
 			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+			return;
 		}
 	}
 	else{
 		ROS_ERROR("Could not call DoAction.");
+		return;
 	}
+
+
+	
+	//move to facebin
+	a_srv = clear;
+	a_srv.request.action = "move_to_bin";
+	a_srv.request.bin_name = "FACE" + container; // CLIENT
+	if( action_srv_.call(a_srv) ){
+		if(a_srv.response.success){
+			ROS_INFO("Move to bin succeeded");
+		}
+		else{
+			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+			return;
+		}
+	}
+	else{
+		ROS_ERROR("Could not call DoAction.");
+		return;
+	}
+
+
+	//move to facebin by box
+	a_srv = clear;
+	a_srv.request.action = "move_to_bin";
+	a_srv.request.bin_name = "FACEBIN3"; 
+	if( action_srv_.call(a_srv) ){
+		if(a_srv.response.success){
+			ROS_INFO("Move to bin succeeded");
+		}
+		else{
+			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+			return;
+		}
+	}
+	else{
+		ROS_ERROR("Could not call DoAction.");
+		return;
+	}
+
+
 
 	// move to box
 	a_srv = clear;
@@ -136,11 +226,18 @@ void TestOrder::cb_fillOrder( const osrf_gear::Order::ConstPtr & msg ){
 		}
 		else{
 			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+			return;
 		}
 	}
 	else{
 		ROS_ERROR("Could not call DoAction.");
+		return;
 	}
+
+
+
+	ROS_INFO("Press for next step...");
+	std::cin >> i;
 
 
 	// place part in goal pose
@@ -162,10 +259,12 @@ void TestOrder::cb_fillOrder( const osrf_gear::Order::ConstPtr & msg ){
 		}
 		else{
 			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+			return;
 		}
 	}
 	else{
 		ROS_ERROR("Could not call DoAction.");
+		return;
 	}
 
 }
