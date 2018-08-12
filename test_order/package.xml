@@ -56,6 +56,7 @@
   <depend>iiwa14_controller</depend>
   <depend>controller_server</depend>
   <depend>action_manager</depend>
+  <depend>world_state</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

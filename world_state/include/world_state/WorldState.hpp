@@ -18,6 +18,7 @@
 #include <world_state/StateGraph.hpp>
 #include <tf2_msgs/TFMessage.h>
 #include <tf2_ros/transform_listener.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <world_state/FindPartType.h>
 #include <world_state/MarkPartUsed.h>
@@ -29,6 +30,8 @@
 #include <world_state/GetPartPose.h>
 #include <world_state/GetBinLocation.h>
 #include <world_state/GetBoxLocation.h>
+#include <world_state/ComputeGoalPose.h>
+
 
 
 namespace world {
@@ -40,6 +43,38 @@ namespace world {
 	
 	class WorldState {
 		
+		private:
+
+			std::vector<Bin> m_bins;
+			std::deque< std::unique_ptr<Box> > m_boxes;
+			NoneContainer m_removed;
+			SensorMap m_sensors;
+			Gripper m_gripper;
+			WorldPartsMap m_parts;
+			std::vector<std::string> m_faulty_parts; 
+			std::unique_ptr<Robot> m_robot;
+			StateGraph m_graph;
+			TFMap m_tf_list;
+			ros::NodeHandle m_node;
+			ros::Timer m_update_t;
+			ros::Subscriber m_tf_sub;
+			ros::ServiceServer m_find_part_type_srv;
+			ros::ServiceServer m_mark_part_used_srv;
+			ros::ServiceServer m_release_part_srv;
+			ros::ServiceServer m_gripper_part_srv;
+			ros::ServiceServer m_box_parts_srv;
+			ros::ServiceServer m_move_part_to_box_srv;
+			ros::ServiceServer m_remove_part_srv;
+			ros::ServiceServer m_part_pose_srv;
+			ros::ServiceServer m_bin_location_srv;
+			ros::ServiceServer m_box_location_srv;
+			ros::ServiceServer m_goal_pose_srv;
+			tf2_ros::Buffer m_tfBuf;
+			tf2_ros::TransformListener m_tfListener;
+			moveit::planning_interface::MoveGroupInterface m_move_group;
+
+
+
 		public:
 			
 			WorldState() 
@@ -65,6 +100,7 @@ namespace world {
 				m_part_pose_srv(),
 				m_bin_location_srv(),
 				m_box_location_srv(),
+				m_goal_pose_srv(),
 				m_tfBuf(),
 				m_tfListener(m_tfBuf),
 				m_move_group("manipulator")
@@ -121,6 +157,8 @@ namespace world {
 			
 			bool sv_getBoxLocation( world_state::GetBoxLocation::Request & req, world_state::GetBoxLocation::Response & rsp );
 			
+			bool sv_computeGoalPose( world_state::ComputeGoalPose::Request & req, world_state::ComputeGoalPose::Response & rsp );
+			
 		private:
 		
 			bool initializeWorld();
@@ -130,35 +168,7 @@ namespace world {
 			void cb_tfList( const tf2_msgs::TFMessage::ConstPtr & tf_list );
 			
 			
-			std::vector<Bin> m_bins;
-			std::deque< std::unique_ptr<Box> > m_boxes;
-			NoneContainer m_removed;
-			SensorMap m_sensors;
-			Gripper m_gripper;
-			WorldPartsMap m_parts;
-			std::vector<std::string> m_faulty_parts; 
-			std::unique_ptr<Robot> m_robot;
-			StateGraph m_graph;
-			TFMap m_tf_list;
 			
-			ros::NodeHandle m_node;
-			ros::Timer m_update_t;
-			ros::Subscriber m_tf_sub;
-			ros::ServiceServer m_find_part_type_srv;
-			ros::ServiceServer m_mark_part_used_srv;
-			ros::ServiceServer m_release_part_srv;
-			ros::ServiceServer m_gripper_part_srv;
-			ros::ServiceServer m_box_parts_srv;
-			ros::ServiceServer m_move_part_to_box_srv;
-			ros::ServiceServer m_remove_part_srv;
-			ros::ServiceServer m_part_pose_srv;
-			ros::ServiceServer m_bin_location_srv;
-			ros::ServiceServer m_box_location_srv;
-			
-			tf2_ros::Buffer m_tfBuf;
-			tf2_ros::TransformListener m_tfListener;
-			
-			moveit::planning_interface::MoveGroupInterface m_move_group;
 	};
 	
 }

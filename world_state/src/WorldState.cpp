@@ -71,6 +71,7 @@ namespace world {
 		m_part_pose_srv =			m_node.advertiseService( "get_part_pose", &WorldState::sv_getPartPose, this );
 		m_bin_location_srv =		m_node.advertiseService( "get_bin_location", &WorldState::sv_getBinLocation, this );
 		m_box_location_srv =		m_node.advertiseService( "get_box_location", &WorldState::sv_getBoxLocation, this );
+		m_goal_pose_srv =			m_node.advertiseService( "compute_goal_pose", &WorldState::sv_computeGoalPose, this );
 			
 		return true;
 	}
@@ -404,7 +405,6 @@ namespace world {
 		if( req.type != "gear_part" && req.type != "gasket_part" && req.type != "disk_part" && req.type != "pulley_part" && req.type != "piston_rod_part" ){
 			rsp.success = false;
 			rsp.message = "Did not provide a valid part type";
-			return true;
 		}
 		else{
 			
@@ -412,37 +412,39 @@ namespace world {
 				
 				std::shared_ptr<Part> p = it->second.lock();
 				if( p->isAvailable() && !p->isFaulty() ){
-					rsp.part.name = p->getName();
-					rsp.part.type = p->getType();
-					rsp.part.id = getIDFromName(rsp.part.name);
-					rsp.part.current_pose = p->getPose();
+					rsp.part_name = p->getName();
 					rsp.success = true;
-					rsp.message = "Found the part: " + rsp.part.name;
 					return true;
 				}
 			}
 			
 			rsp.success = false;
 			rsp.message = "could not find any avilable " + req.type + " type";
-			return true;
 		}
+
+		return true;
 	}
 			
 	
 	bool WorldState::sv_markPartUsed( world_state::MarkPartUsed::Request & req, world_state::MarkPartUsed::Response & rsp ){
 					
 		std::string type = getTypeFromName(req.name);
-		if( !m_parts[type][req.name].expired() ){
-			m_parts[type][req.name].lock()->markUsed();
-			rsp.success = true;
-			return true;
+		if( type != "gear_part" && type != "gasket_part" && type != "disk_part" && type != "pulley_part" && type != "piston_rod_part" ){
+			rsp.success = false;
+			rsp.message = "Did not provide a valid part name";
 		}
 		else{
-			rsp.success = false;
-			rsp.message = "Could not find the part: " + req.name;
-			return true;	
-		}			
+			if( !m_parts[type][req.name].expired() ){
+				m_parts[type][req.name].lock()->markUsed();
+				rsp.success = true;
+			}
+			else{
+				rsp.success = false;
+				rsp.message = "Could not find the part: " + req.name;
+			}	
+		}
 		
+		return true;
 	}
 	
 			
@@ -629,7 +631,34 @@ namespace world {
 
 
 	}
-					
+	
+
+	bool WorldState::sv_computeGoalPose( world_state::ComputeGoalPose::Request & req, world_state::ComputeGoalPose::Response & rsp ){
+
+		ROS_ERROR("Relative Pose: %.4f, %.4f, %.4f", req.relative_pose.position.x, req.relative_pose.position.y, req.relative_pose.position.z);
+		geometry_msgs::TransformStamped box_tf;
+		try {
+			box_tf = m_tfBuf.lookupTransform( "world", "logical_camera_6_shipping_box_0_frame", ros::Time(0), ros::Duration( 1.0 ) );
+			ROS_ERROR("Transform to world: %.4f, %.4f, %.4f", box_tf.transform.translation.x, box_tf.transform.translation.y, box_tf.transform.translation.z);
+			tf2::doTransform(req.relative_pose, rsp.goal_pose, box_tf);
+			ROS_ERROR("Goal Pose: %.4f, %.4f, %.4f", rsp.goal_pose.position.x, rsp.goal_pose.position.y, rsp.goal_pose.position.z);
+			rsp.success = true;
+		} 
+		catch (tf2::LookupException e) {
+			rsp.success = false;
+			rsp.message = "Exception caught, could not find the box tf!";
+			ROS_ERROR("%s", rsp.message.c_str());
+		}
+
+		return true;
+	}
+
+
+
+
+
+
+
 
 
 	//****************Helper Functions

@@ -171,22 +171,23 @@ namespace control {
 
 	bool ActionManager::placePart( geometry_msgs::Pose goal_pose, std::string & error_message ){
 
-		// // Move part to the goal pose
-		// controller_server::MoveCartesian c_srv;
-		// c_srv.request.waypoints.push_back(pose);
-		// if( cartesian_srv_.call(c_srv) ){
-		// 	if( c_srv.response.success ){
-		// 		ROS_INFO("Robot successfully moved to goal pose.");
-		// 	}
-		// 	else{
-		// 		ROS_ERROR("Fail: %s", c_srv.response.message.c_str());
-		// 		return false;
-		// 	}
-		// }
-		// else{
-		// 	ROS_ERROR("Could not call MoveCartesian srv");
-		// 	return false;
-		// }
+		// Move part to the goal pose
+		controller_server::MoveCartesian c_srv;
+		goal_pose.position.z += 0.07;
+		c_srv.request.waypoints.push_back(goal_pose);
+		if( cartesian_srv_.call(c_srv) ){
+			if( c_srv.response.success ){
+				ROS_INFO("Robot successfully moved to goal pose.");
+			}
+			else{
+				ROS_ERROR("Fail: %s", c_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call MoveCartesian srv");
+			return false;
+		}
 
 
 		// Deactivate gripper

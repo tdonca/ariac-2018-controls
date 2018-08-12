@@ -72,6 +72,7 @@ add_service_files(
 	GetPartPose.srv
 	GetBinLocation.srv
 	GetBoxLocation.srv
+  ComputeGoalPose.srv
 )
 
 ## Generate actions in the 'action' folder

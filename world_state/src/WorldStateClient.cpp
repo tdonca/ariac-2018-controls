@@ -50,55 +50,55 @@ namespace client {
 		}
 	}
 	
-	bool WorldStateClient::getPartType( std::string type, PlannerPart & part_found ){
+	// bool WorldStateClient::getPartType( std::string type, PlannerPart & part_found ){
 		
-		// call find part type service  
-		world_state::FindPartType fpt_srv;
-		fpt_srv.request.type = type;
+	// 	// call find part type service  
+	// 	world_state::FindPartType fpt_srv;
+	// 	fpt_srv.request.type = type;
 		
-		if( m_find_part_type_srv.call(fpt_srv) ){
-			if( fpt_srv.response.success ){
-				//ROS_INFO("Message: %s", fpt_srv.response.message.c_str());
-				part_found.name = fpt_srv.response.part.name;
-				part_found.type = fpt_srv.response.part.type;
-				part_found.id = fpt_srv.response.part.id;
-				part_found.current_pose = fpt_srv.response.part.current_pose;
-				return true;
-			}
-			else{
-				ROS_ERROR("Message: %s", fpt_srv.response.message.c_str());
-				return false;
-			}
-		}
-		else{
-			ROS_ERROR("Error calling FindPartType service.");
-			return false;
-		}
-	}
+	// 	if( m_find_part_type_srv.call(fpt_srv) ){
+	// 		if( fpt_srv.response.success ){
+	// 			//ROS_INFO("Message: %s", fpt_srv.response.message.c_str());
+	// 			part_found.name = fpt_srv.response.part.name;
+	// 			part_found.type = fpt_srv.response.part.type;
+	// 			part_found.id = fpt_srv.response.part.id;
+	// 			part_found.current_pose = fpt_srv.response.part.current_pose;
+	// 			return true;
+	// 		}
+	// 		else{
+	// 			ROS_ERROR("Message: %s", fpt_srv.response.message.c_str());
+	// 			return false;
+	// 		}
+	// 	}
+	// 	else{
+	// 		ROS_ERROR("Error calling FindPartType service.");
+	// 		return false;
+	// 	}
+	// }
 	
 	
 	
 	// ******* FREE ALL PARTS BEFORE ABORTING OR PREEMPTING A SHIPMENT *********
-	bool WorldStateClient::markPartUsed( PlannerPart const & part ){
+	// bool WorldStateClient::markPartUsed( PlannerPart const & part ){
 		
-		world_state::MarkPartUsed mp_srv;
-		mp_srv.request.name = part.name;
+	// 	world_state::MarkPartUsed mp_srv;
+	// 	mp_srv.request.name = part.name;
 		
-		if( m_mark_part_used_srv.call(mp_srv) ){
-			if( mp_srv.response.success ){
-				ROS_INFO("Successfully marked used %s", part.name.c_str());
-				return true;
-			}
-			else{
-				ROS_ERROR("Message: %s", mp_srv.response.message.c_str());
-				return false;
-			}
-		}
-		else{
-			ROS_ERROR("Error calling MarkPartUsed service.");
-			return false;
-		}	
-	}
+	// 	if( m_mark_part_used_srv.call(mp_srv) ){
+	// 		if( mp_srv.response.success ){
+	// 			ROS_INFO("Successfully marked used %s", part.name.c_str());
+	// 			return true;
+	// 		}
+	// 		else{
+	// 			ROS_ERROR("Message: %s", mp_srv.response.message.c_str());
+	// 			return false;
+	// 		}
+	// 	}
+	// 	else{
+	// 		ROS_ERROR("Error calling MarkPartUsed service.");
+	// 		return false;
+	// 	}	
+	// }
 	
 	
 	
@@ -362,5 +362,74 @@ namespace client {
 	}
 
 
+	bool WorldStateClient::findPartOfType( std::string type, std::string & part_name ){
+		
+		// call find part type service  
+		world_state::FindPartType fpt_srv;
+		fpt_srv.request.type = type;
+		
+		if( m_find_part_type_srv.call(fpt_srv) ){
+			if( fpt_srv.response.success ){
+				part_name = fpt_srv.response.part_name;
+				return true;
+			}
+			else{
+				ROS_ERROR("Message: %s", fpt_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Error calling FindPartType service.");
+			return false;
+		}
+	}
+
+
+	bool WorldStateClient::markPartUsed( std::string part_name ){
+
+		world_state::MarkPartUsed mp_srv;
+		mp_srv.request.name = part_name;
+		
+		if( m_mark_part_used_srv.call(mp_srv) ){
+			if( mp_srv.response.success ){
+				ROS_INFO("Successfully marked used %s", part_name.c_str());
+				return true;
+			}
+			else{
+				ROS_ERROR("Message: %s", mp_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Error calling MarkPartUsed service.");
+			return false;
+		}
+	}
+
+
+	bool WorldStateClient::computeGoalPose( geometry_msgs::Pose relative_pose, std::string box_name, geometry_msgs::Pose & goal_pose ){
+
+		world_state::ComputeGoalPose gp_srv;
+		gp_srv.request.relative_pose = relative_pose;
+		gp_srv.request.box_name = box_name;
+
+		if( m_goal_pose_srv.call(gp_srv) ){
+			if( gp_srv.response.success ){
+				ROS_INFO("Successfully computed goal pose.");
+				goal_pose = gp_srv.response.goal_pose;
+				return true;
+			}
+			else{
+				ROS_ERROR("Fail: %s", gp_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Error calling ComputeGoalPose service.");
+			return false;
+		}
+
+		
+	}
 
 }

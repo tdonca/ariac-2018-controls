@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
 	roslaunch
 	controller_server
 	action_manager
+	world_state
 	
 )
 
@@ -111,7 +112,7 @@ roslaunch_add_file_check(launch)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES test
-  CATKIN_DEPENDS iiwa14_controller controller_server action_manager
+  CATKIN_DEPENDS iiwa14_controller controller_server action_manager world_state
 #  DEPENDS system_lib
 )
 

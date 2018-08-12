@@ -12,6 +12,7 @@
 #include <world_state/GetPartPose.h>
 #include <world_state/GetBinLocation.h>
 #include <world_state/GetBoxLocation.h>
+#include <world_state/ComputeGoalPose.h>
 
 
 
@@ -20,8 +21,25 @@ namespace client {
 	struct PlannerPart;
 	void getRPY( const geometry_msgs::Pose  pose, double & r, double & p, double & y );
 	
+
 	class WorldStateClient {
 		
+		private:
+
+			ros::NodeHandle m_node;
+			ros::ServiceClient m_find_part_type_srv;
+			ros::ServiceClient m_mark_part_used_srv;
+			ros::ServiceClient m_release_part_srv;
+			ros::ServiceClient m_gripper_part_srv;
+			ros::ServiceClient m_box_parts_srv;
+			ros::ServiceClient m_move_part_to_box_srv;
+			ros::ServiceClient m_remove_part_srv;
+			ros::ServiceClient m_part_pose_srv;
+			ros::ServiceClient m_bin_location_srv;
+			ros::ServiceClient m_box_location_srv;
+			ros::ServiceClient m_goal_pose_srv;
+
+
 		public:
 			
 			WorldStateClient()
@@ -34,7 +52,8 @@ namespace client {
 				m_remove_part_srv(),
 				m_part_pose_srv(),
 				m_bin_location_srv(),
-				m_box_location_srv()
+				m_box_location_srv(),
+				m_goal_pose_srv()
 			
 			{
 				m_find_part_type_srv = m_node.serviceClient<world_state::FindPartType>("find_part_type");
@@ -49,15 +68,14 @@ namespace client {
 				m_part_pose_srv = m_node.serviceClient<world_state::GetPartPose>("get_part_pose");
 				m_bin_location_srv = m_node.serviceClient<world_state::GetBinLocation>("get_bin_location");
 				m_box_location_srv = m_node.serviceClient<world_state::GetBoxLocation>("get_box_location");
-				
-				//test();
+				m_goal_pose_srv = m_node.serviceClient<world_state::ComputeGoalPose>("compute_goal_pose");
 				
 			}
 			
 			
 			// actions that the planners and executors will use
 			
-			bool getPartType( std::string type, PlannerPart & part_found );
+			// bool getPartType( std::string type, PlannerPart & part_found );
 			
 			bool markPartUsed( PlannerPart const & part );
 			
@@ -81,25 +99,19 @@ namespace client {
 			
 			bool getBoxLocation( std::string name, std::vector<std::string> & jn, std::vector<double> & jv );
 
+			bool findPartOfType( std::string type, std::string & part_name );
+
+			bool markPartUsed( std::string part_name );
+
+			bool computeGoalPose( geometry_msgs::Pose relative_pose, std::string box_name, geometry_msgs::Pose & goal_pose );
 
 		
 		private:
 		
-			// internal communication with WorldState node
 			void test();
 			
 			
-			ros::NodeHandle m_node;
-			ros::ServiceClient m_find_part_type_srv;
-			ros::ServiceClient m_mark_part_used_srv;
-			ros::ServiceClient m_release_part_srv;
-			ros::ServiceClient m_gripper_part_srv;
-			ros::ServiceClient m_box_parts_srv;
-			ros::ServiceClient m_move_part_to_box_srv;
-			ros::ServiceClient m_remove_part_srv;
-			ros::ServiceClient m_part_pose_srv;
-			ros::ServiceClient m_bin_location_srv;
-			ros::ServiceClient m_box_location_srv;
+			
 		
 	};
 	
