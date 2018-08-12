@@ -214,6 +214,7 @@ namespace control {
 		if( gripper_srv_.call(g_srv) ){
 			if( g_srv.response.success ){
 				ROS_INFO("Robot successfully placed the part.");
+				return true;
 			}
 			else{
 				ROS_ERROR("Fail: %s", g_srv.response.message.c_str());
@@ -225,7 +226,6 @@ namespace control {
 			return false;
 		}
 
-		return true;
 	}
 
 

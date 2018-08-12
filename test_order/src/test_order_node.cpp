@@ -256,6 +256,7 @@ void TestOrder::cb_fillOrder( const osrf_gear::Order::ConstPtr & msg ){
 	if( action_srv_.call(a_srv) ){
 		if(a_srv.response.success){
 			ROS_INFO("Place part succeeded");
+			world_client_.markPartUsed(name);
 		}
 		else{
 			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
