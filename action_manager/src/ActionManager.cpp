@@ -27,6 +27,11 @@ namespace control {
 			rsp.success = moveToBin( req.bin_name, rsp.message );
 
 		}
+		else if( req.action == "face_box" ) {
+
+			rsp.success = faceBox( req.bin_name, rsp.message );
+
+		}
 		else if( req.action == "move_to_box" ) {
 
 			rsp.success = moveToBox( req.box_name, rsp.message );
@@ -82,111 +87,127 @@ namespace control {
 
 	bool ActionManager::grabPart( std::string part_name, std::string & error_message ){
 
-		// Get current part's grab-pose
-		geometry_msgs::Pose pose;
-		if( world_state_.getPartGrabPose( part_name, pose ) ){
-			ROS_INFO("%s found at pose: %.3f %.3f %.3f", part_name.c_str(), pose.position.x, pose.position.y, pose.position.z);
-		}	
-		else{
-			error_message = "Could not get pose of: " + part_name;
-			return false;
-		}
+		int attempts = 0;
+		while( attempts < 3 ){
+
+			attempts += 1;
+			ROS_INFO("Attempt #%d to grab part:", attempts);
+
+			// Get current part's grab-pose
+			geometry_msgs::Pose pose;
+			if( world_state_.getPartGrabPose( part_name, pose ) ){
+				ROS_INFO("%s found at pose: %.3f %.3f %.3f", part_name.c_str(), pose.position.x, pose.position.y, pose.position.z);
+			}	
+			else{
+				error_message = "Could not get pose of: " + part_name;
+				ROS_ERROR("%s", error_message.c_str());
+				continue;
+			}
 
 
-		// Make sure the gripper is off
-		controller_server::ActivateGripper g_srv;
-		g_srv.request.enable = false;
-		if( gripper_srv_.call(g_srv) ){
-			if( g_srv.response.success ){
-				ROS_INFO("Gripper deactivated.");
+			// Make sure the gripper is off
+			controller_server::ActivateGripper g_srv;
+			g_srv.request.enable = false;
+			if( gripper_srv_.call(g_srv) ){
+				if( g_srv.response.success ){
+					ROS_INFO("Gripper deactivated.");
+				}
+				else{
+					ROS_ERROR("Fail: %s", g_srv.response.message.c_str());
+				}
 			}
 			else{
-				ROS_ERROR("Fail: %s", g_srv.response.message.c_str());
-				return false;
+				error_message = "Could not call ActivateGripper srv";
+				ROS_ERROR("%s", error_message.c_str());
 			}
-		}
-		else{
-			ROS_ERROR("Could not call ActivateGripper srv");
-			return false;
-		}
 
 
 
-		// Move robot to the part
-		controller_server::MoveCartesian c_srv;
-		c_srv.request.waypoints.push_back(pose);
-		if( cartesian_srv_.call(c_srv) ){
-			if( c_srv.response.success ){
-				ROS_INFO("Robot successfully moved to part pose.");
-			}
-			else{
-				ROS_ERROR("Fail: %s", c_srv.response.message.c_str());
-				return false;
-			}
-		}
-		else{
-			ROS_ERROR("Could not call MoveCartesian srv");
-			return false;
-		}
-
-
-		// Grab the part with the gripper
-		g_srv.request.enable = true;
-		if( gripper_srv_.call(g_srv) ){
-			if( g_srv.response.success ){
-				ROS_INFO("Robot successfully grabbed the part.");
+			// Move robot to the part
+			controller_server::MoveCartesian c_srv;
+			c_srv.request.waypoints.push_back(pose);
+			if( cartesian_srv_.call(c_srv) ){
+				if( c_srv.response.success ){
+					ROS_INFO("Robot successfully moved to part pose.");
+				}
+				else{
+					error_message = c_srv.response.message;
+					ROS_ERROR("Fail: %s", c_srv.response.message.c_str());
+				}
 			}
 			else{
-				ROS_ERROR("Fail: %s", g_srv.response.message.c_str());
-				return false;
+				error_message = "Could not call MoveCartesian srv";
+				ROS_ERROR("%s", error_message.c_str());
 			}
-		}
-		else{
-			ROS_ERROR("Could not call ActivateGripper srv");
-			return false;
-		}
 
 
-		// Lift part up
-		pose.position.z += 0.05;
-		c_srv.request.waypoints[0] = pose;
-		if( cartesian_srv_.call(c_srv) ){
-			if( c_srv.response.success ){
-				ROS_INFO("Robot successfully moved to above pose.");
+			// Grab the part with the gripper
+			g_srv.request.enable = true;
+			if( gripper_srv_.call(g_srv) ){
+				if( g_srv.response.success ){
+					ROS_INFO("Activated the gripper.");
+				}
+				else{
+					error_message = g_srv.response.message;
+					ROS_ERROR("Fail: %s", g_srv.response.message.c_str());
+				}
 			}
 			else{
-				ROS_ERROR("Fail: %s", c_srv.response.message.c_str());
-				return false;
+				error_message = "Could not call ActivateGripper srv";
+				ROS_ERROR("%s", error_message.c_str());
 			}
-		}
-		else{
-			ROS_ERROR("Could not call MoveCartesian srv");
-			return false;
+
+
+			// Lift part up
+			pose.position.z += 0.05;
+			c_srv.request.waypoints[0] = pose;
+			if( cartesian_srv_.call(c_srv) ){
+				if( c_srv.response.success ){
+					ROS_INFO("Robot successfully moved to above pose.");
+					error_message = "";
+				}
+				else{
+					error_message = c_srv.response.message;
+					ROS_ERROR("Fail: %s", c_srv.response.message.c_str());
+				}
+			}
+			else{
+				error_message = "Could not call MoveCartesian srv";
+				ROS_ERROR("%s", error_message.c_str());
+			}
+
+
+			// Check that the part is held
+			if( world_state_.gripperHasPart() ){
+				ROS_INFO("Robot is successfully holding the part.");
+				return true;
+			}
+
 		}
 
-		return true;
-
+		return false;
 	}
 
 
 	bool ActionManager::placePart( geometry_msgs::Pose goal_pose, std::string & error_message ){
 
-		// // Move part to the goal pose
-		// controller_server::MoveCartesian c_srv;
-		// c_srv.request.waypoints.push_back(pose);
-		// if( cartesian_srv_.call(c_srv) ){
-		// 	if( c_srv.response.success ){
-		// 		ROS_INFO("Robot successfully moved to goal pose.");
-		// 	}
-		// 	else{
-		// 		ROS_ERROR("Fail: %s", c_srv.response.message.c_str());
-		// 		return false;
-		// 	}
-		// }
-		// else{
-		// 	ROS_ERROR("Could not call MoveCartesian srv");
-		// 	return false;
-		// }
+		// Move part to the goal pose
+		controller_server::MoveCartesian c_srv;
+		goal_pose.position.z += 0.07;
+		c_srv.request.waypoints.push_back(goal_pose);
+		if( cartesian_srv_.call(c_srv) ){
+			if( c_srv.response.success ){
+				ROS_INFO("Robot successfully moved to goal pose.");
+			}
+			else{
+				ROS_ERROR("Fail: %s", c_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call MoveCartesian srv");
+			return false;
+		}
 
 
 		// Deactivate gripper
@@ -195,6 +216,7 @@ namespace control {
 		if( gripper_srv_.call(g_srv) ){
 			if( g_srv.response.success ){
 				ROS_INFO("Robot successfully placed the part.");
+				return true;
 			}
 			else{
 				ROS_ERROR("Fail: %s", g_srv.response.message.c_str());
@@ -206,7 +228,6 @@ namespace control {
 			return false;
 		}
 
-		return true;
 	}
 
 
@@ -278,6 +299,51 @@ namespace control {
 
 
 		return true;
+	}
+
+
+	bool ActionManager::faceBox( std::string bin_name, std::string & error_message ){
+
+		std::vector<std::string> jn = { "linear_arm_actuator_joint", "iiwa_joint_1", "iiwa_joint_2", "iiwa_joint_3", "iiwa_joint_4", "iiwa_joint_5", "iiwa_joint_6", "iiwa_joint_7"};	
+		std::vector<double> jv = { -1.37, 1.88, -1.40, -1.52, -2.06, -1.58, 1.44, 0.06 };
+
+		if( bin_name == "BIN1" ){
+			jv[0] = -1.37;
+		}
+		else if( bin_name == "BIN2" ){
+			jv[0] = -0.58;
+		}
+		else if( bin_name == "BIN3" ){
+			jv[0] = 0.25;
+		}
+		else if( bin_name == "BIN4" ){
+			jv[0] = 1.01;	
+		}
+		else if( bin_name == "BIN5" ){
+			jv[0] = 1.75;	
+		}
+
+		// Move robot to the box
+		controller_server::MoveJoints j_srv;
+		j_srv.request.joint_names = jn;
+		j_srv.request.joint_values = jv;
+		if( joints_srv_.call(j_srv) ){
+			if( j_srv.response.success ){
+				ROS_INFO("Robot successfully moved to face box at: %s", bin_name.c_str());
+			}
+			else{
+				ROS_ERROR("Fail: %s", j_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call MoveJoints srv");
+			return false;
+		}
+
+
+
+
 	}
 
 }

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(test_action)
+project(test_order)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
 	roslaunch
 	controller_server
 	action_manager
+	world_state
 	
 )
 
@@ -111,7 +112,7 @@ roslaunch_add_file_check(launch)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES test
-  CATKIN_DEPENDS iiwa14_controller controller_server action_manager
+  CATKIN_DEPENDS iiwa14_controller controller_server action_manager world_state
 #  DEPENDS system_lib
 )
 
@@ -139,7 +140,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(${PROJECT_NAME}_node src/test_action_node.cpp)
+add_executable(${PROJECT_NAME}_node src/test_order_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

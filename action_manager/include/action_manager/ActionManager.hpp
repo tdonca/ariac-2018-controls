@@ -66,6 +66,7 @@ namespace control {
 			bool placePart( geometry_msgs::Pose goal_pose, std::string & error_message );
 			bool moveToBin( std::string bin_name, std::string & error_message );
 			bool moveToBox( std::string box_name, std::string & error_message );
+			bool faceBox( std::string bin_name, std::string & error_message );
 	};
 
 }

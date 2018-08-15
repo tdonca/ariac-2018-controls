@@ -1,0 +1,11 @@
+# Transform the goal pose of the part from relative to box frame to world frame
+
+geometry_msgs/Pose relative_pose
+string box_name
+
+---
+
+geometry_msgs/Pose goal_pose
+
+bool success
+string message

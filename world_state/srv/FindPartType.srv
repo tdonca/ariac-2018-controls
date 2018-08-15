@@ -5,8 +5,9 @@ string type
 
 ---
 
+string part_name
+
 bool success
 string message
 
-Part part
 

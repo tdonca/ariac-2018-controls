@@ -1,0 +1,8 @@
+<launch>
+
+	<remap from="/joint_states" to="/ariac/joint_states" />
+	
+	<node name="load_scene_node" pkg="load_scene" type="load_scene_node"  output="screen"  />
+	
+	
+</launch>
