@@ -27,6 +27,11 @@ namespace control {
 			rsp.success = moveToBin( req.bin_name, rsp.message );
 
 		}
+		else if( req.action == "face_box" ) {
+
+			rsp.success = faceBox( req.bin_name, rsp.message );
+
+		}
 		else if( req.action == "move_to_box" ) {
 
 			rsp.success = moveToBox( req.box_name, rsp.message );
@@ -294,6 +299,51 @@ namespace control {
 
 
 		return true;
+	}
+
+
+	bool ActionManager::faceBox( std::string bin_name, std::string & error_message ){
+
+		std::vector<std::string> jn = { "linear_arm_actuator_joint", "iiwa_joint_1", "iiwa_joint_2", "iiwa_joint_3", "iiwa_joint_4", "iiwa_joint_5", "iiwa_joint_6", "iiwa_joint_7"};	
+		std::vector<double> jv = { -1.37, 1.88, -1.40, -1.52, -2.06, -1.58, 1.44, 0.06 };
+
+		if( bin_name == "BIN1" ){
+			jv[0] = -1.37;
+		}
+		else if( bin_name == "BIN2" ){
+			jv[0] = -0.58;
+		}
+		else if( bin_name == "BIN3" ){
+			jv[0] = 0.25;
+		}
+		else if( bin_name == "BIN4" ){
+			jv[0] = 1.01;	
+		}
+		else if( bin_name == "BIN5" ){
+			jv[0] = 1.75;	
+		}
+
+		// Move robot to the box
+		controller_server::MoveJoints j_srv;
+		j_srv.request.joint_names = jn;
+		j_srv.request.joint_values = jv;
+		if( joints_srv_.call(j_srv) ){
+			if( j_srv.response.success ){
+				ROS_INFO("Robot successfully moved to face box at: %s", bin_name.c_str());
+			}
+			else{
+				ROS_ERROR("Fail: %s", j_srv.response.message.c_str());
+				return false;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call MoveJoints srv");
+			return false;
+		}
+
+
+
+
 	}
 
 }

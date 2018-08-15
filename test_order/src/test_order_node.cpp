@@ -198,11 +198,11 @@ void TestOrder::cb_fillOrder( const osrf_gear::Order::ConstPtr & msg ){
 
 	//move to facebin by box
 	a_srv = clear;
-	a_srv.request.action = "move_to_bin";
-	a_srv.request.bin_name = "FACEBIN2"; 
+	a_srv.request.action = "face_box";
+	a_srv.request.bin_name = container; 
 	if( action_srv_.call(a_srv) ){
 		if(a_srv.response.success){
-			ROS_INFO("Move to bin succeeded");
+			ROS_INFO("Move to face box succeeded");
 		}
 		else{
 			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
