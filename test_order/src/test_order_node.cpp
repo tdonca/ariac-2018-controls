@@ -43,230 +43,249 @@ class TestOrder {
 
 void TestOrder::cb_fillOrder( const osrf_gear::Order::ConstPtr & msg ){
 
-	// for(int i = 0; i < msg->shipments[0].products.size(); ++i ){
+	for(int i = 0; i < msg->shipments[0].products.size(); ++i ){
 		
-	// }
-	char i;
-	std::string type = msg->shipments[0].products[0].type;
-	std::string name;
-	std::string container;
-	action_manager::DoAction clear;
-	action_manager::DoAction a_srv;
-	
+		std::string type = msg->shipments[0].products[i].type;
+		std::string name;
+		std::string container;
+		action_manager::DoAction clear;
+		action_manager::DoAction a_srv;
+		
 
-	//find part 
-	if( world_client_.findPartOfType(type, name) ){
-		ROS_INFO("Found part: %s", name.c_str());
-	}
-	else{
-		ROS_ERROR("Could not find part of type: %s", type.c_str());
-		return;
-	}
-
-	//find container
-	if( world_client_.getPartContainer(name, container) ){
-		ROS_INFO("Found part container: %s", container.c_str());
-	}
-	else{
-		ROS_ERROR("Could not find container of part: %s", name.c_str());
-		return;
-	}
-
-
-
-	//move to facebin
-	a_srv = clear;
-	a_srv.request.action = "move_to_bin";
-	a_srv.request.bin_name = "FACE" + container; // CLIENT
-	if( action_srv_.call(a_srv) ){
-		if(a_srv.response.success){
-			ROS_INFO("Move to bin succeeded");
-		}
-		else{
-			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
-			return;
-		}
-	}
-	else{
-		ROS_ERROR("Could not call DoAction.");
-		return;
-	}
-
-
-	//move to bin
-	a_srv = clear;
-	a_srv.request.action = "move_to_bin";
-	a_srv.request.bin_name = container; // CLIENT
-	if( action_srv_.call(a_srv) ){
-		if(a_srv.response.success){
-			ROS_INFO("Move to bin succeeded");
-		}
-		else{
-			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
-			return;
-		}
-	}
-	else{
-		ROS_ERROR("Could not call DoAction.");
-		return;
-	}
-
-
-	// approach part
-	a_srv = clear;
-	a_srv.request.action = "approach_part";
-	a_srv.request.part_name = name;
-
-	if( action_srv_.call(a_srv) ){
-		if(a_srv.response.success){
-			ROS_INFO("Approach part succeeded");
-		}
-		else{
-			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
-			return;
-		}
-	}
-	else{
-		ROS_ERROR("Could not call DoAction.");
-		return;
-	}
-
-
-	// ROS_INFO("Press for next step...");
-	// std::cin >> i;
-
-
-	// grab part
-	a_srv = clear;
-	a_srv.request.action = "grab_part";
-	a_srv.request.part_name = name;
-	if( action_srv_.call(a_srv) ){
-		if(a_srv.response.success){
-			ROS_INFO("Grab part succeeded");
-		}
-		else{
-			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
-			return;
-		}
-	}
-	else{
-		ROS_ERROR("Could not call DoAction.");
-		return;
-	}
-
-	// ROS_INFO("Press for next step...");
-	// std::cin >> i;
-
-	// move to bin
-	a_srv = clear;
-	a_srv.request.action = "move_to_bin";
-	a_srv.request.bin_name = container; // CLIENT
-	if( action_srv_.call(a_srv) ){
-		if(a_srv.response.success){
-			ROS_INFO("Move to bin succeeded");
-		}
-		else{
-			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
-			return;
-		}
-	}
-	else{
-		ROS_ERROR("Could not call DoAction.");
-		return;
-	}
-
-
-	
-	//move to facebin
-	a_srv = clear;
-	a_srv.request.action = "move_to_bin";
-	a_srv.request.bin_name = "FACE" + container; // CLIENT
-	if( action_srv_.call(a_srv) ){
-		if(a_srv.response.success){
-			ROS_INFO("Move to bin succeeded");
-		}
-		else{
-			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
-			return;
-		}
-	}
-	else{
-		ROS_ERROR("Could not call DoAction.");
-		return;
-	}
-
-
-	//move to facebin by box
-	a_srv = clear;
-	a_srv.request.action = "face_box";
-	a_srv.request.bin_name = container; 
-	if( action_srv_.call(a_srv) ){
-		if(a_srv.response.success){
-			ROS_INFO("Move to face box succeeded");
-		}
-		else{
-			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
-			return;
-		}
-	}
-	else{
-		ROS_ERROR("Could not call DoAction.");
-		return;
-	}
-
-
-
-	// move to box
-	a_srv = clear;
-	a_srv.request.action = "move_to_box";
-	a_srv.request.box_name = "BOX";
-	if( action_srv_.call(a_srv) ){
-		if(a_srv.response.success){
-			ROS_INFO("Move to box succeeded");
-		}
-		else{
-			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
-			return;
-		}
-	}
-	else{
-		ROS_ERROR("Could not call DoAction.");
-		return;
-	}
-
-
-
-	// ROS_INFO("Press for next step...");
-	// std::cin >> i;
-
-
-	// place part in goal pose
-	geometry_msgs::Pose goal_pose;
-	if( world_client_.computeGoalPose( msg->shipments[0].products[0].pose, "BOX0", goal_pose ) ){
-		ROS_INFO("Found goal pose: %.4f, %.4f, %.4f", goal_pose.position.x, goal_pose.position.y, goal_pose.position.z);
-	} 
-	else{
-		ROS_ERROR("Could not compute the goal pose");
-		return;
-	}
-	a_srv = clear;
-	a_srv.request.action = "place_part";
-	a_srv.request.part_name = name;
-	a_srv.request.goal_pose = goal_pose;
-	if( action_srv_.call(a_srv) ){
-		if(a_srv.response.success){
-			ROS_INFO("Place part succeeded");
+		//find part 
+		if( world_client_.findPartOfType(type, name) ){
+			ROS_INFO("Found part: %s", name.c_str());
 			world_client_.markPartUsed(name);
 		}
 		else{
-			ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+			ROS_ERROR("Could not find part of type: %s", type.c_str());
 			return;
 		}
+
+		//find container
+		if( world_client_.getPartContainer(name, container) ){
+			ROS_INFO("Found part container: %s", container.c_str());
+		}
+		else{
+			ROS_ERROR("Could not find container of part: %s", name.c_str());
+			--i;
+			continue;
+		}
+
+
+
+		//move to facebin
+		a_srv = clear;
+		a_srv.request.action = "move_to_bin";
+		a_srv.request.bin_name = "FACE" + container; // CLIENT
+		if( action_srv_.call(a_srv) ){
+			if(a_srv.response.success){
+				ROS_INFO("Move to bin succeeded");
+			}
+			else{
+				ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+				--i;
+				continue;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call DoAction.");
+			return;
+		}
+
+
+		//move to bin
+		a_srv = clear;
+		a_srv.request.action = "move_to_bin";
+		a_srv.request.bin_name = container; // CLIENT
+		if( action_srv_.call(a_srv) ){
+			if(a_srv.response.success){
+				ROS_INFO("Move to bin succeeded");
+			}
+			else{
+				ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+				--i;
+				continue;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call DoAction.");
+			return;
+		}
+
+
+		// approach part
+		a_srv = clear;
+		a_srv.request.action = "approach_part";
+		a_srv.request.part_name = name;
+
+		if( action_srv_.call(a_srv) ){
+			if(a_srv.response.success){
+				ROS_INFO("Approach part succeeded");
+			}
+			else{
+				ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+				--i;
+				continue;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call DoAction.");
+			return;
+		}
+
+
+		// ROS_INFO("Press for next step...");
+		// std::cin >> i;
+
+
+		// grab part
+		a_srv = clear;
+		a_srv.request.action = "grab_part";
+		a_srv.request.part_name = name;
+		if( action_srv_.call(a_srv) ){
+			if(a_srv.response.success){
+				ROS_INFO("Grab part succeeded");
+			}
+			else{
+				ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+				--i;
+				continue;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call DoAction.");
+			return;
+		}
+
+		// ROS_INFO("Press for next step...");
+		// std::cin >> i;
+
+		// move to bin
+		a_srv = clear;
+		a_srv.request.action = "move_to_bin";
+		a_srv.request.bin_name = container; // CLIENT
+		if( action_srv_.call(a_srv) ){
+			if(a_srv.response.success){
+				ROS_INFO("Move to bin succeeded");
+			}
+			else{
+				ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+				--i;
+				continue;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call DoAction.");
+			return;
+		}
+
+
+		
+		//move to facebin
+		a_srv = clear;
+		a_srv.request.action = "move_to_bin";
+		a_srv.request.bin_name = "FACE" + container; // CLIENT
+		if( action_srv_.call(a_srv) ){
+			if(a_srv.response.success){
+				ROS_INFO("Move to bin succeeded");
+			}
+			else{
+				ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+				--i;
+				continue;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call DoAction.");
+			return;
+		}
+
+
+		//move to facebin by box
+		a_srv = clear;
+		a_srv.request.action = "face_box";
+		a_srv.request.bin_name = container; 
+		if( action_srv_.call(a_srv) ){
+			if(a_srv.response.success){
+				ROS_INFO("Move to face box succeeded");
+			}
+			else{
+				ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+				--i;
+				continue;	
+			}
+		}
+		else{
+			ROS_ERROR("Could not call DoAction.");
+			return;
+		}
+
+
+
+		// move to box
+		a_srv = clear;
+		a_srv.request.action = "move_to_box";
+		a_srv.request.box_name = "BOX";
+		if( action_srv_.call(a_srv) ){
+			if(a_srv.response.success){
+				ROS_INFO("Move to box succeeded");
+			}
+			else{
+				ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+				--i;
+				continue;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call DoAction.");
+			return;
+		}
+
+
+
+		// ROS_INFO("Press for next step...");
+		// std::cin >> i;
+
+
+		// place part in goal pose
+		geometry_msgs::Pose goal_pose;
+		if( world_client_.computeGoalPose( msg->shipments[0].products[i].pose, "BOX0", goal_pose ) ){
+			ROS_INFO("Found goal pose: %.4f, %.4f, %.4f", goal_pose.position.x, goal_pose.position.y, goal_pose.position.z);
+		} 
+		else{
+			ROS_ERROR("Could not compute the goal pose");
+			--i;
+			continue;
+		}
+		a_srv = clear;
+		a_srv.request.action = "place_part";
+		a_srv.request.part_name = name;
+		a_srv.request.goal_pose = goal_pose;
+		if( action_srv_.call(a_srv) ){
+			if(a_srv.response.success){
+				ROS_INFO("Place part succeeded");
+		
+			}
+			else{
+				ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
+				--i;
+				continue;
+			}
+		}
+		else{
+			ROS_ERROR("Could not call DoAction.");
+			return;
+		}
+
+
+
 	}
-	else{
-		ROS_ERROR("Could not call DoAction.");
-		return;
-	}
+
+
+
+
+	
 
 }
 
