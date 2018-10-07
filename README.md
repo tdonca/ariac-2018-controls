@@ -1,6 +1,6 @@
 # Robot Control System for ARIAC Environment  
 
-A detailed writeup is available ![here](https://www.tudordonca.com/ariac).  
+A detailed writeup is available [here](https://www.tudordonca.com/ariac).  
 <br/>
 
 ## World Representation  
