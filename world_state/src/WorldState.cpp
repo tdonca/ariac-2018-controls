@@ -21,17 +21,6 @@ namespace world {
 		addBox(b1);
 		
 		
-		//~ // DEBUG -- REMOVE!!
-			//~ Part part1("gasket_part_63", geometry_msgs::Pose(), &m_removed);
-			//~ addNewPartToGripper(part1);
-			//~ Part part2("gear_part_5", geometry_msgs::Pose(), &m_removed);
-			//~ addNewPartToBox(part2);
-			//~ Part part3("pulley_part_60", geometry_msgs::Pose(), &m_removed);
-			//~ addNewPartToBox(part3);
-			
-		//~ // DEBUG -- REMOVE!!
-		
-		
 		// Sensors
 		addCameraSensor("logical_camera_1");
 		addCameraSensor("logical_camera_2");
@@ -167,7 +156,6 @@ namespace world {
 					continue;
 				}
 				
-				// v MOVE TO A SEPARATE FUNCTION --------------------
 				// find matching part id
 				for( WorldPartsMap::iterator it = m_parts.begin(); it != m_parts.end(); ++it ){
 					for( std::unordered_map<std::string, std::weak_ptr<Part> >::iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2 ){
@@ -186,7 +174,6 @@ namespace world {
 						break;
 					}
 				}
-				// ^ MOVE TO A SEPARATE FUNCTION ________________
 				
 				if(!found){
 					ROS_ERROR("Could not mark %s faulty !!!", faulty_parts[i].name.c_str());
@@ -604,7 +591,6 @@ namespace world {
 
 		State tmp;
 		if( m_graph.findState(req.bin_name, tmp) ){
-			// TODO: Remove this hardcoding of joint names!
 			rsp.joint_names = { "linear_arm_actuator_joint", "iiwa_joint_1", "iiwa_joint_2", "iiwa_joint_3", "iiwa_joint_4", "iiwa_joint_5", "iiwa_joint_6", "iiwa_joint_7"};
 			rsp.joint_values = tmp.joint_values;
 			rsp.success = true;
@@ -624,7 +610,6 @@ namespace world {
 
 		State tmp;
 		if( m_graph.findState(req.box_name, tmp) ){
-			// TODO: Remove this hardcoding of joint names!
 			rsp.joint_names = { "linear_arm_actuator_joint", "iiwa_joint_1", "iiwa_joint_2", "iiwa_joint_3", "iiwa_joint_4", "iiwa_joint_5", "iiwa_joint_6", "iiwa_joint_7"};
 			rsp.joint_values = tmp.joint_values;
 			rsp.success = true;
@@ -684,12 +669,6 @@ namespace world {
 
 
 
-
-
-
-
-
-	//****************Helper Functions
 
 
 	double partOffset( std::string type ){

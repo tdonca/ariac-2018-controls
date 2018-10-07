@@ -123,24 +123,6 @@ int main( int argc, char* argv[] ){
 	
 
 
-
-
-
-	// if( cartesian_srv.call(cart_srv) ){
-	// 	if( cart_srv.response.success ){
-	// 		ROS_INFO("Cartesian path executed successfully.");
-	// 	}
-	// 	else{
-	// 		ROS_ERROR("Fail: %s", cart_srv.response.message.c_str());
-	// 	}
-	// }
-	// else{
-	// 	ROS_ERROR("Could not call ExecuteCartesian.");
-	// }
-	//END
-
-
-
 	ros::waitForShutdown();
 	return 0;
 }

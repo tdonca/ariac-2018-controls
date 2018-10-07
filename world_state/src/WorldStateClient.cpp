@@ -50,59 +50,8 @@ namespace client {
 		}
 	}
 	
-	// bool WorldStateClient::getPartType( std::string type, PlannerPart & part_found ){
-		
-	// 	// call find part type service  
-	// 	world_state::FindPartType fpt_srv;
-	// 	fpt_srv.request.type = type;
-		
-	// 	if( m_find_part_type_srv.call(fpt_srv) ){
-	// 		if( fpt_srv.response.success ){
-	// 			//ROS_INFO("Message: %s", fpt_srv.response.message.c_str());
-	// 			part_found.name = fpt_srv.response.part.name;
-	// 			part_found.type = fpt_srv.response.part.type;
-	// 			part_found.id = fpt_srv.response.part.id;
-	// 			part_found.current_pose = fpt_srv.response.part.current_pose;
-	// 			return true;
-	// 		}
-	// 		else{
-	// 			ROS_ERROR("Message: %s", fpt_srv.response.message.c_str());
-	// 			return false;
-	// 		}
-	// 	}
-	// 	else{
-	// 		ROS_ERROR("Error calling FindPartType service.");
-	// 		return false;
-	// 	}
-	// }
 	
 	
-	
-	// ******* FREE ALL PARTS BEFORE ABORTING OR PREEMPTING A SHIPMENT *********
-	// bool WorldStateClient::markPartUsed( PlannerPart const & part ){
-		
-	// 	world_state::MarkPartUsed mp_srv;
-	// 	mp_srv.request.name = part.name;
-		
-	// 	if( m_mark_part_used_srv.call(mp_srv) ){
-	// 		if( mp_srv.response.success ){
-	// 			ROS_INFO("Successfully marked used %s", part.name.c_str());
-	// 			return true;
-	// 		}
-	// 		else{
-	// 			ROS_ERROR("Message: %s", mp_srv.response.message.c_str());
-	// 			return false;
-	// 		}
-	// 	}
-	// 	else{
-	// 		ROS_ERROR("Error calling MarkPartUsed service.");
-	// 		return false;
-	// 	}	
-	// }
-	
-	
-	
-	// ******* FREE ALL PARTS BEFORE ABORTING OR PREEMPTING A SHIPMENT *********
 	bool WorldStateClient::releasePart( PlannerPart const & part ){
 		
 		world_state::ReleasePart rp_srv;
@@ -125,6 +74,7 @@ namespace client {
 	}
 	
 	
+
 	bool WorldStateClient::getGripperPart( PlannerPart & part_found ){
 		
 		world_state::GetGripperPart gp_srv;
@@ -467,11 +417,6 @@ namespace client {
 
 		return m_gripper_has_part;	
 	}
-
-
-
-
-
 
 
 

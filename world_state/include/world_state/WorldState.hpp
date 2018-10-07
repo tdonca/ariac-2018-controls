@@ -36,9 +36,8 @@
 
 
 namespace world {
-						//type					//name
-	typedef std::unordered_map< std::string, std::unordered_map< std::string, std::weak_ptr<Part> > > WorldPartsMap;
-						//name				
+
+	typedef std::unordered_map< std::string, std::unordered_map< std::string, std::weak_ptr<Part> > > WorldPartsMap;				
 	typedef std::unordered_map< std::string, std::unique_ptr<Sensor> > SensorMap;
 	typedef std::map< std::string, std::pair<std::string, ros::Time> > TFMap;
 	

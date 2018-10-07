@@ -36,7 +36,7 @@ namespace iiwa14 {
 				vacuum_srv_()
 
 			{	
-				// DEBUG: Wait for startup prints to finish
+				// Wait for startup prints to finish
 				ros::Duration(1.0).sleep();
 
 

@@ -23,8 +23,6 @@ namespace world {
 		graph.setStateJointValues( "BOX", std::vector<double>{-0.07,  0.00,  0.91,  0.00, -1.81,  0.00,  0.21,  0.00} );
 
 		graph.setStateJointValues( "REMOVE", std::vector<double>{-0.07, -2.11,  0.91,  0.00, -1.81,  0.00,  0.21,  0.00} );
-
-		//graph.setStateJointValues( "ASIDE", );
 		
 		graph.setStateJointValues( "BIN1", std::vector<double>{-1.80, -0.94, -1.65, -1.52, -0.95, -1.58, 1.44, 0.06} );
 
@@ -47,22 +45,6 @@ namespace world {
 		graph.setStateJointValues( "FACEBIN5", std::vector<double>{1.40, -2.11, -1.40, -1.52, -2.06, -1.58, 1.44, 0.06} );
 		
 		
-		// // move to init position (FACEBIN2)
-		// State starting;
-		// if( graph.findState( "FACEBIN2", starting ) ){
-		// 	ROS_INFO("Initializing robot to start position.");
-		// 	m_state = IN_TRANSITION;
-		// 	m_graph_state = "FACEBIN2";
-		// 	// wait for collision scene to load
-		// 	ros::Duration(0.5).sleep();
-		// 	m_move_group.setJointValueTarget( starting.joint_values );
-		// 	moveit::planning_interface::MoveGroupInterface::Plan plan;
-		// 	m_move_group.plan(plan);
-		// 	m_move_group.execute(plan);
-		// }
-		// else{
-		// 	ROS_ERROR("Graph error at robot setup!");
-		// }
 		
 		return true;
 	}

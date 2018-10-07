@@ -135,9 +135,6 @@ void TestOrder::cb_fillOrder( const osrf_gear::Order::ConstPtr & msg ){
 		}
 
 
-		// ROS_INFO("Press for next step...");
-		// std::cin >> i;
-
 
 		// grab part
 		a_srv = clear;
@@ -158,8 +155,6 @@ void TestOrder::cb_fillOrder( const osrf_gear::Order::ConstPtr & msg ){
 			return;
 		}
 
-		// ROS_INFO("Press for next step...");
-		// std::cin >> i;
 
 		// move to bin
 		a_srv = clear;
@@ -244,9 +239,6 @@ void TestOrder::cb_fillOrder( const osrf_gear::Order::ConstPtr & msg ){
 
 
 
-		// ROS_INFO("Press for next step...");
-		// std::cin >> i;
-
 
 		// place part in goal pose
 		geometry_msgs::Pose goal_pose;
@@ -281,10 +273,6 @@ void TestOrder::cb_fillOrder( const osrf_gear::Order::ConstPtr & msg ){
 
 
 	}
-
-
-
-
 	
 
 }
@@ -303,111 +291,6 @@ int main( int argc, char* argv[] ){
 
 	ros::waitForShutdown();
 	return 0;
-
-
-	
-
-
-
-	// while(getchar()) {
-		
-	// 	ROS_INFO("Tasks \n1: approach_part \n2: move_to_bin \n3: grab_part \n4: move_to_box \n5: place_part");
-	// 	int i;
-	// 	std::string task_name;
-	// 	std::cin>>i;
-
-
-	// 	if( i == 1){
-	// 		action_manager::DoAction a_srv;
-	// 		a_srv.request.action = "approach_part";
-	// 		a_srv.request.part_name = "gear_part_8";
-
-	// 		if( action_srv_.call(a_srv) ){
-	// 			if(a_srv.response.success){
-	// 				ROS_INFO("Approach part succeeded");
-	// 			}
-	// 			else{
-	// 				ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
-	// 			}
-	// 		}
-	// 		else{
-	// 			ROS_ERROR("Could not call DoAction.");
-	// 		}
-	// 	}
-
-	// 	else if (i == 2){
-	// 		action_manager::DoAction a_srv;
-	// 		a_srv.request.action = "move_to_bin";
-	// 		a_srv.request.bin_name = "BIN1";
-	// 		if( action_srv_.call(a_srv) ){
-	// 			if(a_srv.response.success){
-	// 				ROS_INFO("Move to bin succeeded");
-	// 			}
-	// 			else{
-	// 				ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
-	// 			}
-	// 		}
-	// 		else{
-	// 			ROS_ERROR("Could not call DoAction.");
-	// 		}
-	// 	}
-
-	// 	else if (i == 3){
-	// 		action_manager::DoAction a_srv;
-	// 		a_srv.request.action = "grab_part";
-	// 		a_srv.request.part_name = "gear_part_8";
-	// 		if( action_srv_.call(a_srv) ){
-	// 			if(a_srv.response.success){
-	// 				ROS_INFO("Grab part succeeded");
-	// 			}
-	// 			else{
-	// 				ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
-	// 			}
-	// 		}
-	// 		else{
-	// 			ROS_ERROR("Could not call DoAction.");
-	// 		}
-
-	// 	}
-
-	// 	else if (i == 4){
-	// 		action_manager::DoAction a_srv;
-	// 		a_srv.request.action = "move_to_box";
-	// 		a_srv.request.box_name = "BOX";
-	// 		if( action_srv_.call(a_srv) ){
-	// 			if(a_srv.response.success){
-	// 				ROS_INFO("Move to box succeeded");
-	// 			}
-	// 			else{
-	// 				ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
-	// 			}
-	// 		}
-	// 		else{
-	// 			ROS_ERROR("Could not call DoAction.");
-	// 		}
-
-	// 	}
-
-	// 	else if (i == 5){
-	// 		action_manager::DoAction a_srv;
-	// 		a_srv.request.action = "place_part";
-	// 		a_srv.request.part_name = "gear_part_8";
-	// 		// goal pose????
-	// 		if( action_srv_.call(a_srv) ){
-	// 			if(a_srv.response.success){
-	// 				ROS_INFO("Place part succeeded");
-	// 			}
-	// 			else{
-	// 				ROS_ERROR("Fail: %s", a_srv.response.message.c_str());
-	// 			}
-	// 		}
-	// 		else{
-	// 			ROS_ERROR("Could not call DoAction.");
-	// 		}
-
-	// 	}
-
-	// }
 
 
 

@@ -98,9 +98,6 @@ namespace client {
 			}
 			
 			
-			// actions that the planners and executors will use
-			
-			// bool getPartType( std::string type, PlannerPart & part_found );
 			
 			bool markPartUsed( PlannerPart const & part );
 			

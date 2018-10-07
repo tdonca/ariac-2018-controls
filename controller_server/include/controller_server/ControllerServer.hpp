@@ -42,7 +42,7 @@ namespace control {
 				gripper_srvs_()
 
 			{	
-				// DEBUG: Wait for startup prints to finish
+				// Wait for startup prints to finish
 				ros::Duration(1.1).sleep();
 
 				ROS_INFO("ControllerServer is waiting for services to appear...");

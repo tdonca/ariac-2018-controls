@@ -46,18 +46,7 @@ int main(int argc, char* argv[]){
 	
 	/* Bin 1 */
 	
-	//~ bin_tf.header.stamp = ros::Time::now();
-	//~ bin_tf.header.frame_id = "world";
-	//~ bin_tf.child_frame_id = "bin1";
-	//~ q.setRPY(0, -0.25, 3.14159);
-	//~ bin_tf.transform.rotation.x = q.x();
-	//~ bin_tf.transform.rotation.y = q.y();
-	//~ bin_tf.transform.rotation.z = q.z();
-	//~ bin_tf.transform.rotation.w = q.w();
-	//~ bin_tf.transform.translation.x = -0.85;
-	//~ bin_tf.transform.translation.y = -0.49;
-	//~ bin_tf.transform.translation.z = 0.96;
-	//~ static_broadcast.sendTransform(bin_tf);
+
 	
 	// bottom
 	geometry_msgs::TransformStamped wall_bottom_tf;
@@ -138,10 +127,6 @@ int main(int argc, char* argv[]){
 	
 	/* Bin 2 */
 	
-	//~ bin_tf.header.stamp = ros::Time::now();
-	//~ bin_tf.child_frame_id = "bin2";
-	//~ bin_tf.transform.translation.y = 0.32;
-	//~ static_broadcast.sendTransform(bin_tf);
 	
 	//bottom
 	wall_bottom_tf.header.stamp = ros::Time::now();
@@ -177,10 +162,6 @@ int main(int argc, char* argv[]){
 	
 	/* Bin 3 */
 	
-	//~ bin_tf.header.stamp = ros::Time::now();
-	//~ bin_tf.child_frame_id = "bin3";
-	//~ bin_tf.transform.translation.y = 1.13;
-	//~ static_broadcast.sendTransform(bin_tf);
 	
 	//bottom
 	wall_bottom_tf.header.stamp = ros::Time::now();
@@ -216,10 +197,6 @@ int main(int argc, char* argv[]){
 	
 	/* Bin 4 */
 	
-	//~ bin_tf.header.stamp = ros::Time::now();
-	//~ bin_tf.child_frame_id = "bin4";
-	//~ bin_tf.transform.translation.y = 1.94;
-	//~ static_broadcast.sendTransform(bin_tf);
 	
 	//bottom
 	wall_bottom_tf.header.stamp = ros::Time::now();
@@ -256,10 +233,6 @@ int main(int argc, char* argv[]){
 	
 	/* Bin 5 */
 	
-	//~ bin_tf.header.stamp = ros::Time::now();
-	//~ bin_tf.child_frame_id = "bin5";
-	//~ bin_tf.transform.translation.y = 2.75;
-	//~ static_broadcast.sendTransform(bin_tf);
 	
 	//bottom
 	wall_bottom_tf.header.stamp = ros::Time::now();

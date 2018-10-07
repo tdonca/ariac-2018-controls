@@ -38,7 +38,6 @@ namespace world {
 			const std::string m_name;
 			std::shared_ptr<Part> m_part;
 			
-			// Adapter for actual EE object
 		
 	};
 	

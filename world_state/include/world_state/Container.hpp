@@ -32,7 +32,7 @@ namespace world {
 			virtual bool connectSensor( Sensor* sensor ) = 0;
 			
 			virtual Sensor* getSensor() = 0;
-			// move implementation to here so that there is less code duplication
+			
 			virtual void printContainer() = 0;
 			
 			virtual ~Container() {}
